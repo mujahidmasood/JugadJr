@@ -8,7 +8,7 @@ Kids aged 5–11 watch a small trouble unfold in a cartoon world, say their own 
 
 ![JugadJr demo](assets/demo.gif)
 
-*A real recorded session. The child types a trouble that is in none of the built-in list — "my little brother keeps losing his shoes and we are late for school" — and Gemini builds a world for it: the brother, a ticking clock, the school bus. Their answer, a shoe parking spot by the door, gets built into the scene.*
+*A real recorded session, start to finish. The puppy runs through the mud, the child answers with their own idea — a doormat by the door — and it gets built into the world. Then the game asks who else has this problem.*
 
 ---
 
@@ -34,15 +34,6 @@ Before every turn, the server counts how many times the child has answered and h
 The model never chooses when to back off. The code does, deterministically. **A child cannot get stuck in JugadJr, and a child cannot be handed the answer early.** That guarantee is the product.
 
 The moment they name any plausible fix — water, soap, a mat, a towel, a machine — it gets built into the scene, and their imperfect version always beats the model's perfect one.
-
-## The child brings their own trouble
-
-Six troubles ship with the game, but they are only a starting point. A child can speak or type any problem from their own life and the whole game builds itself around it — Gemini generates the scene, the characters, and the opening question.
-
-We learned this the hard way. In the first play-test with real children, the part that landed hardest was not solving the trouble — it was *choosing* one. They immediately understood that a problem worth fixing could come from their own day. At the time, the UI only allowed the curated list. So it became the feature.
-
-> *"my little brother keeps losing his shoes and we are late for school"*
-> → **The Shoe Hunt** — the brother, a single shoe, a ticking clock, a school bus pulling away.
 
 ## The second half: do they think like a founder?
 
@@ -122,7 +113,7 @@ src/components/IntroScreens.tsx    first-run explanation of the point
 src/components/ParentGate.tsx      parental gate + grown-ups area
 src/components/SceneActors.tsx     drawn characters, actor/mood resolution
 src/components/CompanionAvatars.tsx  the four companions
-scripts/record-demo.mjs            drives a real session to record the demo GIF
+scripts/record-video.mjs           plays a full session to record the demo video
 ```
 
 ## Run locally
@@ -143,6 +134,8 @@ npm run lint                 # tsc --noEmit
 ## Adding a trouble
 
 Append an entry to `CURATED_PROBLEMS` in both `server.ts` and `src/App.tsx`. Anything without a bespoke animation gets a generic "it gets worse, then we ask" opening beat automatically, and any character in it is picked up by `resolveActor` and drawn without extra wiring — new troubles are data, not code.
+
+The backend accepts an arbitrary problem string, so the game can build a scene for anything; the UI deliberately offers a curated set so a child always starts somewhere good.
 
 ---
 

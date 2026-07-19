@@ -277,12 +277,6 @@ export default function App() {
   const [handsFree, setHandsFree] = useState<boolean>(true);
 
   // Shark Sana review
-  // The child's own trouble. Problem-FINDING is the part that actually landed in
-  // play-testing, but the UI only ever offered the curated list - the backend has
-  // always accepted an arbitrary problem string.
-  const [ownTrouble, setOwnTrouble] = useState<string>("");
-  // Whether the next voice capture is a solution idea or the child's own trouble.
-  const voiceTargetRef = useRef<'idea' | 'trouble'>('idea');
   // Shown once per device, before anything loads or speaks.
   const [showIntro, setShowIntro] = useState<boolean>(
     () => localStorage.getItem("jugadjr_seen_intro") !== "1"
@@ -852,12 +846,6 @@ export default function App() {
 
         if (data?.ok && data.text) {
           setIsTranscribing(false);
-          if (voiceTargetRef.current === 'trouble') {
-            voiceTargetRef.current = 'idea';
-            setOwnTrouble(data.text);
-            handleLoadOrGenerateScene(data.text);
-            return;
-          }
           setMessageInput(data.text);
           handleSendMessage(data.text);
           return;
@@ -969,12 +957,6 @@ export default function App() {
     rec.onresult = (event: any) => {
       const resultText = event.results[0][0].transcript;
       if (!resultText) return;
-      if (voiceTargetRef.current === 'trouble') {
-        voiceTargetRef.current = 'idea';
-        setOwnTrouble(resultText);
-        handleLoadOrGenerateScene(resultText);
-        return;
-      }
       setMessageInput(resultText);
       handleSendMessage(resultText);
     };
@@ -1140,42 +1122,6 @@ export default function App() {
               );
             })}
 
-            {/* The child's OWN trouble. Picking a problem worth solving is the part
-                that landed in play-testing, so it cannot be curated-list only. Spoken
-                for younger kids; typed also gives the app a keyboard path when the
-                microphone is unavailable or denied. */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const text = ownTrouble.trim();
-                if (text.length < 3) return;
-                handleLoadOrGenerateScene(text);
-              }}
-              className="flex items-center gap-1 w-full mt-1 pt-1.5 border-t-2 border-sky-200"
-            >
-              <span className="text-[9px] font-black uppercase text-slate-500 px-1 shrink-0">My own:</span>
-              <input
-                value={ownTrouble}
-                onChange={(e) => setOwnTrouble(e.target.value)}
-                placeholder="What trouble do YOU want to fix?"
-                className="flex-1 min-w-0 text-[11px] font-bold bg-white border-2 border-slate-300 focus:border-slate-800 rounded-xl px-2 py-1 outline-none"
-              />
-              <button
-                type="button"
-                title="Say your own trouble out loud"
-                onClick={() => { voiceTargetRef.current = 'trouble'; startListening(false); }}
-                className="shrink-0 px-2 py-1 rounded-xl border-2 border-slate-900 bg-amber-300 hover:bg-amber-200 text-[11px] font-black"
-              >
-                🎤
-              </button>
-              <button
-                type="submit"
-                disabled={ownTrouble.trim().length < 3}
-                className="shrink-0 px-2.5 py-1 rounded-xl border-2 border-slate-900 bg-emerald-300 hover:bg-emerald-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-300 text-[11px] font-black"
-              >
-                Go
-              </button>
-            </form>
           </div>
 
           {/* Controls: Coins / Speaker Mute / Reset / Change Name */}

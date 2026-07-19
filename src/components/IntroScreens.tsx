@@ -17,7 +17,7 @@ const SLIDES = [
     key: 'trouble',
     art: <DogActor size={150} mood="muddy" />,
     title: "Every big idea starts with a little trouble",
-    body: "Muddy paws. A lost teddy. Thirsty birds in the garden. Pick one of ours — or tell us a trouble from your own day.",
+    body: "Muddy paws. A lost teddy. Thirsty birds in the garden. Soggy school books. Pick the one you want to fix today.",
     chip: "1 · Find the trouble",
   },
   {

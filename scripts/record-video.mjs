@@ -4,8 +4,9 @@
  * Captures the page viewport only - no browser chrome, no tabs, nothing but the game.
  * Every answer is typed, so the whole run is deterministic and repeatable.
  *
- * Plays the complete arc: intro -> the child's OWN trouble -> invent the fix ->
- * the grow questions -> Shark Sana's verdict.
+ * Plays ONE trouble start to finish: intro -> the trouble plays out -> invent the
+ * fix -> the grow questions -> Shark Sana's verdict. Deliberately a single
+ * scenario; cutting between two troubles reads as confusing, not impressive.
  *
  * Writes frames plus milestones.json (frame indices for caption timing).
  *
@@ -19,16 +20,15 @@ const OUT = process.argv[3] || '/tmp/jugadjr-video';
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const FPS = 10;
 
-const TROUBLE = 'my little brother keeps losing his shoes and we are late for school';
 // Queue of answers, in order. Solve first, then the grow/empathy questions.
 const ANSWERS = [
-  'a shoe parking spot by the door with his name on it',
-  'lots of kids in my class lose their shoes too',
+  'we can wipe his paws with a doormat by the door',
+  'lots of people at the park have muddy dogs too',
   'yes i want to help them',
   'make a little money',
   'yes lets make a plan',
-  'i will put up posters on the school notice board',
-  'ask my teacher to tell the other classes too',
+  'i will put up posters at the park gate',
+  'ask the pet shop to tell people about it',
 ];
 
 await rm(OUT, { recursive: true, force: true });
@@ -96,17 +96,8 @@ for (let i = 0; i < 3; i++) {
   if (btn) await btn.click();
   await hold(400);
 }
-mark('opening scene');
-await hold(4500);            // the dog walks into the mud
-
-// --- The child's own trouble ---
-mark('typing own trouble');
-await typeInto('input[placeholder*="trouble do YOU"]', TROUBLE);
-await hold(700);
-await page.click('form button[type="submit"]');
-mark('building their world');
-await waitForTurn();
-await hold(2600);
+mark('the trouble plays out');
+await hold(11000);           // the dog walks across the park and into the mud
 
 // --- Solve, then the grow questions ---
 for (let i = 0; i < ANSWERS.length; i++) {
