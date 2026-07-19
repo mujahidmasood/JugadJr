@@ -6,6 +6,10 @@ Kids aged 5–11 watch a small trouble unfold in a cartoon world, say their own 
 
 🔗 **Live:** https://jugadjr-372821245947.europe-west1.run.app
 
+![JugadJr demo](assets/demo.gif)
+
+*A real recorded session. The child types a trouble that is in none of the built-in list — "my little brother keeps losing his shoes and we are late for school" — and Gemini builds a world for it: the brother, a ticking clock, the school bus. Their answer, a shoe parking spot by the door, gets built into the scene.*
+
 ---
 
 ## The problem with AI tutors for kids
@@ -31,6 +35,15 @@ The model never chooses when to back off. The code does, deterministically. **A 
 
 The moment they name any plausible fix — water, soap, a mat, a towel, a machine — it gets built into the scene, and their imperfect version always beats the model's perfect one.
 
+## The child brings their own trouble
+
+Six troubles ship with the game, but they are only a starting point. A child can speak or type any problem from their own life and the whole game builds itself around it — Gemini generates the scene, the characters, and the opening question.
+
+We learned this the hard way. In the first play-test with real children, the part that landed hardest was not solving the trouble — it was *choosing* one. They immediately understood that a problem worth fixing could come from their own day. At the time, the UI only allowed the curated list. So it became the feature.
+
+> *"my little brother keeps losing his shoes and we are late for school"*
+> → **The Shoe Hunt** — the brother, a single shoe, a ticking clock, a school bus pulling away.
+
 ## The second half: do they think like a founder?
 
 Once the trouble is solved, the game shifts into a `grow` phase and walks a fixed empathy ladder, one question per turn: *Who else has this problem? Do you want to help them? For free, or to earn a little? How would you tell people?*
@@ -51,7 +64,7 @@ Helping for free is scored as a win. The game never pushes money.
 
 Gemini runs three jobs, all through structured JSON output:
 
-**1. Scene director** (`/api/interact`) — turns a spoken idea into a full array of positioned scene elements with animations and speech bubbles, plus the companion's line, coin costs, coins earned, and a `solved` flag. The response schema is enforced, so the game never parses prose.
+**1. Scene director** (`/api/interact`) — turns a spoken or typed idea into a full array of positioned scene elements with animations and speech bubbles, plus the companion's line, coin costs, coins earned, and a `solved` flag. The response schema is enforced, so the game never parses prose.
 
 **2. Ears** (`/api/transcribe`) — speech-to-text tuned for the actual users. The browser's built-in recogniser is Chrome-only and mishears young children and non-US accents constantly. Gemini is prompted to transcribe *without* correcting grammar or completing sentences, so a five-year-old's real words reach the game. Audio is captured with `MediaRecorder`, re-encoded in-browser to 16 kHz mono WAV, and posted as base64.
 
@@ -61,6 +74,7 @@ Gemini runs three jobs, all through structured JSON output:
 
 Nothing in this app is allowed to show a child an error.
 
+- **Microphone denied or unsupported?** Every voice step has a typed equivalent, so the game is always playable without a mic.
 - **No Gemini key, or no `MediaRecorder`?** Voice silently falls back to the Web Speech API.
 - **Transcription fails?** That turn falls back to Web Speech.
 - **Audio unintelligible?** The companion warmly asks again instead of stalling.
@@ -70,6 +84,12 @@ Nothing in this app is allowed to show a child an error.
 ### Abuse control
 
 `/api/interact`, `/api/transcribe` and `/api/shark` are rate-limited per IP per minute (20 / 30 / 6). The API key and the shared free-tier quota sit behind those routes.
+
+---
+
+## First run
+
+Three cards state the point before anything loads or speaks: find a trouble, invent the fix, pitch it to the shark. Opening the app cold used to drop you into a cartoon park with a microphone and no explanation of what any of it was for — which is exactly how a judge or a parent meets it. Shown once per device, skippable.
 
 ---
 
@@ -98,8 +118,11 @@ React 19 + Vite + Tailwind 4 on the front, Express + `@google/genai` on the back
 server.ts                          API, curated troubles, prompt logic, silence gate, rate limiting
 src/App.tsx                        game loop, canvas, voice capture, WAV encoding
 src/index.css                      cartoon animation keyframes
+src/components/IntroScreens.tsx    first-run explanation of the point
+src/components/ParentGate.tsx      parental gate + grown-ups area
 src/components/SceneActors.tsx     drawn characters, actor/mood resolution
 src/components/CompanionAvatars.tsx  the four companions
+scripts/record-demo.mjs            drives a real session to record the demo GIF
 ```
 
 ## Run locally

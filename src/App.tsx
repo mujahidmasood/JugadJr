@@ -18,6 +18,7 @@ import { CartoonElement, ChatHistoryItem, CuratedProblem } from './types';
 import { COMPANIONS, CompanionAvatar, CompanionType } from './components/CompanionAvatars';
 import { DogActor, KidActor, BirdActor, TeddyActor, resolveActor, resolveMood } from './components/SceneActors';
 import { ParentGate } from './components/ParentGate';
+import { IntroScreens } from './components/IntroScreens';
 
 // Curated troubles with initial setup
 const CURATED_PROBLEMS: CuratedProblem[] = [
@@ -278,6 +279,10 @@ export default function App() {
   const [ownTrouble, setOwnTrouble] = useState<string>("");
   // Whether the next voice capture is a solution idea or the child's own trouble.
   const voiceTargetRef = useRef<'idea' | 'trouble'>('idea');
+  // Shown once per device, before anything loads or speaks.
+  const [showIntro, setShowIntro] = useState<boolean>(
+    () => localStorage.getItem("jugadjr_seen_intro") !== "1"
+  );
   const [parentGateOpen, setParentGateOpen] = useState<boolean>(false);
   const [sharkOpen, setSharkOpen] = useState<boolean>(false);
   const [sharkLoading, setSharkLoading] = useState<boolean>(false);
@@ -1042,13 +1047,14 @@ export default function App() {
     }
   };
 
-  // Initial load
+  // Initial load. Waits for the intro so the companion is not speaking behind it.
   useEffect(() => {
+    if (showIntro) return;
     handleLoadOrGenerateScene(CURATED_PROBLEMS[0].problem, "muddy-puppies");
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.getVoices();
     }
-  }, []);
+  }, [showIntro]);
 
   return (
     <div id="cartoon-app-root" className="min-h-screen bg-sky-100 text-slate-800 font-sans pb-10 flex flex-col justify-between">
@@ -1570,6 +1576,14 @@ export default function App() {
         )}
 
       </main>
+
+      {/* FIRST RUN: what this app is for, before anything else happens */}
+      {showIntro && (
+        <IntroScreens onDone={() => {
+          localStorage.setItem("jugadjr_seen_intro", "1");
+          setShowIntro(false);
+        }} />
+      )}
 
       {/* PARENTAL GATE: age check guarding the grown-up area */}
       {parentGateOpen && <ParentGate onClose={() => setParentGateOpen(false)} />}
