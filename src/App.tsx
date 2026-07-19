@@ -17,6 +17,7 @@ import {
 import { CartoonElement, ChatHistoryItem, CuratedProblem } from './types';
 import { COMPANIONS, CompanionAvatar, CompanionType } from './components/CompanionAvatars';
 import { DogActor, KidActor, BirdActor, TeddyActor, resolveActor, resolveMood } from './components/SceneActors';
+import { ParentGate } from './components/ParentGate';
 
 // Curated troubles with initial setup
 const CURATED_PROBLEMS: CuratedProblem[] = [
@@ -268,6 +269,7 @@ export default function App() {
   const [handsFree, setHandsFree] = useState<boolean>(true);
 
   // Shark Sana review
+  const [parentGateOpen, setParentGateOpen] = useState<boolean>(false);
   const [sharkOpen, setSharkOpen] = useState<boolean>(false);
   const [sharkLoading, setSharkLoading] = useState<boolean>(false);
   const [sharkData, setSharkData] = useState<{
@@ -1140,6 +1142,14 @@ export default function App() {
             )}
 
             <button
+              onClick={() => setParentGateOpen(true)}
+              title="For grown-ups: how this app handles your child's voice"
+              className="text-[9px] font-black uppercase bg-slate-100 hover:bg-slate-200 border-2 border-slate-900 rounded-xl px-2.5 py-1.5 text-slate-600"
+            >
+              Grown-ups 🔒
+            </button>
+
+            <button
               onClick={() => {
                 const updated = !isMuted;
                 setIsMuted(updated);
@@ -1473,6 +1483,9 @@ export default function App() {
         )}
 
       </main>
+
+      {/* PARENTAL GATE: age check guarding the grown-up area */}
+      {parentGateOpen && <ParentGate onClose={() => setParentGateOpen(false)} />}
 
       {/* SHARK SANA INVESTOR REVIEW */}
       {sharkOpen && (
