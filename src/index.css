@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom CSS Keyframes for the Cartoon Elements */
+@keyframes cartoon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+@keyframes cartoon-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes cartoon-float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-12px) translateX(6px); }
+}
+
+@keyframes cartoon-shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-6deg); }
+  75% { transform: rotate(6deg); }
+}
+
+@keyframes cartoon-wiggle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.12) rotate(5deg); }
+}
+
+@keyframes cartoon-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.2)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6)); }
+}
+
+@keyframes cloud-slide {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120vw); }
+}
+
+.animate-cartoon-bounce {
+  animation: cartoon-bounce 1.4s ease-in-out infinite;
+}
+
+.animate-cartoon-spin {
+  animation: cartoon-spin 8s linear infinite;
+}
+
+.animate-cartoon-float {
+  animation: cartoon-float 3s ease-in-out infinite;
+}
+
+.animate-cartoon-shake {
+  animation: cartoon-shake 0.6s ease-in-out infinite;
+}
+
+.animate-cartoon-wiggle {
+  animation: cartoon-wiggle 1.8s ease-in-out infinite;
+}
+
+.animate-cartoon-pulse {
+  animation: cartoon-pulse 2.2s ease-in-out infinite;
+}
+
+.animate-cloud-slow {
+  animation: cloud-slide 45s linear infinite;
+}
+
+.animate-cloud-fast {
+  animation: cloud-slide 30s linear infinite;
+}
