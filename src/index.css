@@ -74,6 +74,43 @@
   animation: cloud-slide 30s linear infinite;
 }
 
+/* The single most important moment in the game is the child's idea appearing in the
+   world. It used to just blink into existence. Now it lands: overshoot, squash, settle. */
+@keyframes actor-drop-in {
+  0%   { transform: scale(0.2) translateY(-40px) rotate(-12deg); opacity: 0; }
+  55%  { transform: scale(1.18) translateY(6px) rotate(4deg);    opacity: 1; }
+  72%  { transform: scale(0.92) translateY(0) rotate(-2deg); }
+  86%  { transform: scale(1.05) translateY(0) rotate(1deg); }
+  100% { transform: scale(1) translateY(0) rotate(0deg); }
+}
+.animate-actor-drop-in {
+  /* backwards keeps the element invisible during its stagger delay */
+  animation: actor-drop-in 0.72s cubic-bezier(0.22, 1.2, 0.36, 1) backwards;
+}
+
+/* Squash-and-stretch bounce: cartoon weight instead of a floating sine wave. */
+@keyframes cartoon-bounce-squash {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  12%      { transform: translateY(0) scale(1.14, 0.86); }
+  45%      { transform: translateY(-18px) scale(0.94, 1.08); }
+  78%      { transform: translateY(0) scale(1.12, 0.88); }
+  90%      { transform: translateY(0) scale(0.98, 1.02); }
+}
+.animate-cartoon-bounce {
+  animation: cartoon-bounce-squash 1.5s cubic-bezier(0.4, 0, 0.5, 1) infinite;
+  transform-origin: 50% 100%;
+}
+
+/* Breathing: what "idle but alive" should look like for background scenery, instead
+   of every prop wiggling at full amplitude and stealing focus from the story. */
+@keyframes cartoon-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50%      { transform: scale(1.025) rotate(0.8deg); }
+}
+.animate-cartoon-breathe {
+  animation: cartoon-breathe 4.5s ease-in-out infinite;
+}
+
 @keyframes cartoon-walk {
   0% { transform: rotate(-4deg) translateY(0); }
   25% { transform: rotate(0deg) translateY(-3px); }

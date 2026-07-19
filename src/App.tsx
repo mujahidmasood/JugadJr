@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { CartoonElement, ChatHistoryItem, CuratedProblem } from './types';
 import { COMPANIONS, CompanionAvatar, CompanionType } from './components/CompanionAvatars';
+import { DogActor, KidActor, BirdActor, TeddyActor, resolveActor, resolveMood } from './components/SceneActors';
 
 // Curated troubles with initial setup
 const CURATED_PROBLEMS: CuratedProblem[] = [
@@ -316,6 +317,34 @@ export default function App() {
     return () => { cancelled = true; };
   }, []);
 
+  // Elements the AI just added, so they can drop into the world instead of blinking
+  // into existence. Value is the stagger index within its batch.
+  const seenElementIdsRef = useRef<Set<string>>(new Set());
+  const [enteringIds, setEnteringIds] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const added = elements.filter(el => !seenElementIdsRef.current.has(el.id)).map(el => el.id);
+    // Rebuild rather than union, so an element that leaves and comes back animates again.
+    seenElementIdsRef.current = new Set(elements.map(el => el.id));
+    if (!added.length) return;
+
+    setEnteringIds(prev => {
+      const next = { ...prev };
+      added.forEach((id, i) => { next[id] = i; });
+      return next;
+    });
+
+    // Drop the flag once the animation has finished, so it never replays on re-render.
+    const timer = setTimeout(() => {
+      setEnteringIds(prev => {
+        const next = { ...prev };
+        added.forEach(id => delete next[id]);
+        return next;
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [elements]);
+
   // Story log auto-scroll
   const historyRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -332,6 +361,10 @@ export default function App() {
 
   // Load or Reset a problem scene
   const handleLoadOrGenerateScene = async (customProblem: string, problemId?: string) => {
+    // Kill any in-flight simulation first, or its timers will keep painting the old
+    // trouble's characters over the scene we are about to load.
+    clearSimulation();
+    setIsSimulating(false);
     setIsLoading(true);
     setErrorMsg(null);
     setHistory([]);
@@ -433,9 +466,24 @@ export default function App() {
     }, 4000);
   };
 
+  // A simulation owns a timer that rewrites the whole element array on a tick. If the
+  // kid switches trouble while one is mid-run, the old timer keeps firing and paints
+  // its characters into the new scene - a muddy dog turning up in the thirsty park.
+  // Every simulation registers its timers here so scene changes can cancel them.
+  const simTimersRef = useRef<{ intervals: number[]; timeouts: number[] }>({ intervals: [], timeouts: [] });
+
+  const clearSimulation = () => {
+    simTimersRef.current.intervals.forEach(clearInterval);
+    simTimersRef.current.timeouts.forEach(clearTimeout);
+    simTimersRef.current = { intervals: [], timeouts: [] };
+  };
+
+  useEffect(() => clearSimulation, []);
+
   // Run the trouble simulation; plays automatically when a scene loads
   const runTroubleSimulation = (forcedId?: string) => {
     if (isSimulating) return;
+    clearSimulation();
     setIsSimulating(true);
     const probId = forcedId || activeProblemId;
 
@@ -452,7 +500,7 @@ export default function App() {
       let stepCounter = 0;
       let tracks: { id: string, type: "effect", emoji: string, label: string, animation: "none", x: number, y: number, size: "small" }[] = [];
 
-      const walkInterval = setInterval(() => {
+      const walkInterval = window.setInterval(() => {
         currentX += 0.5;
         stepCounter++;
 
@@ -532,19 +580,20 @@ export default function App() {
         });
 
       }, 30);
+      simTimersRef.current.intervals.push(walkInterval);
 
     } else if (probId === "thirsty-park") {
       // Hot park day: everyone gets thirsty, no drinks anywhere
       const preset = CURATED_PROBLEMS.find(p => p.id === "thirsty-park")!;
       setElements(preset.initial_elements);
 
-      setTimeout(() => {
+      simTimersRef.current.timeouts.push(window.setTimeout(() => {
         setElements(prev => prev.map(el =>
           el.id === "sun-hot" ? { ...el, emoji: "🥵☀️", label: "SUPER HOT SUN!", animation: "bounce", bubbleText: "Blazing!" } : el
         ));
-      }, 1000);
+      }, 1000));
 
-      setTimeout(() => {
+      simTimersRef.current.timeouts.push(window.setTimeout(() => {
         setElements(prev => [
           ...prev.map(el => {
             if (el.id === "boy-1") return { ...el, emoji: "🥵", label: "Thirsty Kid", animation: "shake", bubbleText: "So thirsty!" };
@@ -562,7 +611,7 @@ export default function App() {
         setQuestionText("Everyone is SO thirsty... what is YOUR idea?");
         triggerCompanionVoice(text, autoListenAfterQuestion);
         setIsSimulating(false);
-      }, 3000);
+      }, 3000));
 
     } else {
       // Every other trouble gets a generic "it gets worse, then we ask" beat, so a new
@@ -577,13 +626,13 @@ export default function App() {
 
       // The elements carrying a speech bubble are the ones telling the story: make
       // them react so the kid can see what is going wrong before being asked.
-      setTimeout(() => {
+      simTimersRef.current.timeouts.push(window.setTimeout(() => {
         setElements(prev => prev.map(el =>
           el.bubbleText ? { ...el, animation: "shake" } : el
         ));
-      }, 900);
+      }, 900));
 
-      setTimeout(() => {
+      simTimersRef.current.timeouts.push(window.setTimeout(() => {
         const intro = kidName
           ? `${kidName}! ${preset.companion_intro}`
           : preset.companion_intro;
@@ -591,7 +640,7 @@ export default function App() {
         setQuestionText("What is YOUR idea to fix this?");
         triggerCompanionVoice(intro, autoListenAfterQuestion);
         setIsSimulating(false);
-      }, 2600);
+      }, 2600));
     }
   };
 
@@ -1195,9 +1244,23 @@ export default function App() {
                 else if (el.animation === 'spin') animClass = 'animate-cartoon-spin';
                 else if (el.animation === 'float') animClass = 'animate-cartoon-float';
                 else if (el.animation === 'shake') animClass = 'animate-cartoon-shake';
-                else if (el.animation === 'wiggle') animClass = 'animate-cartoon-wiggle';
+                // Scenery only breathes. Full-amplitude wiggle on every tree and flower
+                // left the eye with nowhere to land; the characters should be what moves.
+                else if (el.animation === 'wiggle') animClass = el.type === 'scenery' ? 'animate-cartoon-breathe' : 'animate-cartoon-wiggle';
                 else if (el.animation === 'pulse') animClass = 'animate-cartoon-pulse';
                 else if (el.animation === 'walk') animClass = 'animate-cartoon-walk';
+
+                // Characters get drawn art; props stay emoji.
+                const actor = resolveActor(el);
+                const actorMood = actor ? resolveMood(el) : 'happy';
+                const actorScale = el.size === 'large' ? 1 : el.size === 'medium' ? 0.78 : 0.56;
+
+                // Things lower on the ground plane are nearer the viewer, so draw them
+                // bigger. Cheap depth on a scene that was previously entirely flat.
+                const depthScale = 0.82 + ((Math.max(10, Math.min(el.y, 75)) - 10) / 65) * 0.36;
+
+                const enterIndex = enteringIds[el.id];
+                const isEntering = enterIndex !== undefined;
 
                 const isMudPatch = el.label.toLowerCase().includes('mud patch') || el.id === 'mud-1';
                 const isMudSplat = /splat|smudge/i.test(el.label) || el.id.startsWith('splat-');
@@ -1211,10 +1274,12 @@ export default function App() {
                     key={el.id}
                     onClick={() => handleTapElement(el.id)}
                     className={`absolute z-10 select-none group cursor-pointer ${isSimulating ? 'transition-none' : 'transition-all duration-1000 ease-out'}`}
-                    style={{ 
-                      left: `${Math.max(8, Math.min(el.x, 85))}%`, 
+                    style={{
+                      left: `${Math.max(8, Math.min(el.x, 85))}%`,
                       top: `${Math.max(10, Math.min(el.y, 75))}%`,
-                      transform: 'translate(-50%, -50%)' 
+                      transform: `translate(-50%, -50%) scale(${depthScale.toFixed(3)})`,
+                      // Nearer things paint over farther things.
+                      zIndex: 10 + Math.round(el.y)
                     }}
                   >
                     {/* Speech Bubble */}
@@ -1262,8 +1327,21 @@ export default function App() {
                           <span>{standGoods}</span><span>{standGoods}</span><span>{standGoods}</span>
                         </div>
                       </div>
+                    ) : actor ? (
+                      <div
+                        className={`${animClass} ${isEntering ? 'animate-actor-drop-in' : ''} hover:scale-110 transition-transform duration-150`}
+                        style={isEntering ? { animationDelay: `${enterIndex * 90}ms` } : undefined}
+                      >
+                        {actor.kind === 'dog' && <DogActor size={130 * actorScale} mood={actorMood} className="drop-shadow-md" />}
+                        {actor.kind === 'kid' && <KidActor size={124 * actorScale} mood={actorMood} variant={actor.variant} className="drop-shadow-md" />}
+                        {actor.kind === 'bird' && <BirdActor size={88 * actorScale} mood={actorMood} className="drop-shadow-md" />}
+                        {actor.kind === 'teddy' && <TeddyActor size={96 * actorScale} mood={actorMood} className="drop-shadow-md" />}
+                      </div>
                     ) : (
-                      <div className={`${sizeClass} ${animClass} filter drop-shadow-md hover:scale-125 active:scale-135 transition-transform duration-150`}>
+                      <div
+                        className={`${sizeClass} ${animClass} ${isEntering ? 'animate-actor-drop-in' : ''} filter drop-shadow-md hover:scale-125 active:scale-135 transition-transform duration-150`}
+                        style={isEntering ? { animationDelay: `${enterIndex * 90}ms` } : undefined}
+                      >
                         {facesLeftByDefault ? (
                           <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>{el.emoji}</span>
                         ) : el.emoji}
