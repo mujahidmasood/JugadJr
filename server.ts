@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 
@@ -21,13 +21,41 @@ const ai = new GoogleGenAI({
   }
 });
 
+// Free-tier daily quota is per model per project. If one model's bucket is
+// exhausted (429), hop to the next until one answers.
+const MODEL_CHAIN = [
+  "gemini-3.5-flash",
+  "gemini-flash-latest",
+  "gemini-3.1-flash-lite",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+];
+
+async function generateWithFallback(config: { contents: string; config: any }) {
+  let lastErr: any = null;
+  for (const model of MODEL_CHAIN) {
+    try {
+      return await ai.models.generateContent({ model, ...config });
+    } catch (err: any) {
+      lastErr = err;
+      const msg = String(err);
+      if (err?.status === 429 || err?.status === 404 || msg.includes("RESOURCE_EXHAUSTED") || msg.includes("NOT_FOUND")) {
+        console.warn(`Model ${model} unavailable (${err?.status}), trying next...`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
 // Curated pool of highly relatable, exciting daily problems for kids
 export const CURATED_PROBLEMS = [
   {
     id: "muddy-puppies",
     title: "Muddy Puppies 🐶",
     problem: "When dogs run in the wet park grass, their paws get super muddy and they ruin clean carpets!",
-    companion_intro: "Oh no, look! The sweet puppy is playing in a beautiful park but has separate fluffy paws that got super muddy! What can we build to wash his feet?",
+    companion_intro: "Oh no, look! The sweet puppy got his paws all muddy playing in the park! What do you think we should do?",
     initial_elements: [
       { id: "sun-park", type: "scenery", emoji: "☀️", label: "Golden Sun", animation: "pulse", x: 85, y: 12, size: "large" },
       { id: "tree-park", type: "scenery", emoji: "🌳", label: "Big Oak Tree", animation: "wiggle", x: 18, y: 32, size: "large" },
@@ -35,54 +63,30 @@ export const CURATED_PROBLEMS = [
       { id: "butterfly-park", type: "scenery", emoji: "🦋", label: "Fluttering Butterfly", animation: "float", x: 26, y: 22, size: "small" },
       { id: "flower-park-1", type: "scenery", emoji: "🌸", label: "Pink Blossom", animation: "wiggle", x: 22, y: 72, size: "small" },
       { id: "flower-park-2", type: "scenery", emoji: "🌷", label: "Red Tulip", animation: "wiggle", x: 58, y: 74, size: "small" },
-      { id: "dog-1", type: "character", emoji: "🐶", label: "Happy Puppy", animation: "bounce", x: 15, y: 55, size: "large", bubbleText: "Let's walk!" },
-      { id: "paw-front", type: "item", emoji: "🐾", label: "Front Paw", animation: "bounce", x: 12, y: 66, size: "small" },
-      { id: "paw-back", type: "item", emoji: "🐾", label: "Back Paw", animation: "bounce", x: 18, y: 66, size: "small" },
-      { id: "mud-1", type: "scenery", emoji: "💩", label: "Wet Mud Patch", animation: "none", x: 42, y: 70, size: "medium" },
+      { id: "dog-1", type: "character", emoji: "🐕", label: "Happy Puppy", animation: "bounce", x: 15, y: 58, size: "large", bubbleText: "Let's walk!" },
+      { id: "mud-1", type: "scenery", emoji: "", label: "Wet Mud Patch", animation: "none", x: 42, y: 70, size: "medium" },
       { id: "rug-1", type: "item", emoji: "🏠", label: "Clean House", animation: "pulse", x: 80, y: 58, size: "large", bubbleText: "Keep me clean!" }
     ]
   },
   {
-    id: "sad-squirrels",
-    title: "Melting Squirrel Ice Cream 🐿️🍦",
-    problem: "The squirrels' homemade nut-ice-cream is melting super fast under the burning summer sun!",
-    companion_intro: "Look up there! The hot summer sun is melting the squirrels' delicious acorn ice cream! What cool cartoon gadget can we create to shield and cool them?",
+    id: "thirsty-park",
+    title: "Thirsty Park Day 🍋",
+    problem: "It is SO hot at the park today. Everyone is thirsty and grumpy, and there is nothing to drink anywhere!",
+    companion_intro: "Phew, what a hot day at the park! Everyone is thirsty and grumpy, and there is nothing to drink anywhere! What do you think we should do?",
     initial_elements: [
-      { id: "sun-1", type: "scenery", emoji: "☀️", label: "Hot Sun", animation: "pulse", x: 50, y: 15, size: "large", bubbleText: "So hot!" },
-      { id: "squirrel-1", type: "character", emoji: "🐿️", label: "Sad Squirrel", animation: "shake", x: 30, y: 60, size: "medium", bubbleText: "My ice cream!" },
-      { id: "cart-1", type: "item", emoji: "🍦", label: "Melting Cart", animation: "wiggle", x: 45, y: 62, size: "large", bubbleText: "Drip drop!" },
-      { id: "sweat-1", type: "effect", emoji: "💦", label: "Melting", animation: "float", x: 45, y: 50, size: "small" }
+      { id: "sun-hot", type: "scenery", emoji: "☀️", label: "Blazing Sun", animation: "pulse", x: 80, y: 12, size: "large" },
+      { id: "tree-park", type: "scenery", emoji: "🌳", label: "Shady Tree", animation: "wiggle", x: 15, y: 30, size: "large" },
+      { id: "kid-ball", type: "character", emoji: "⚽", label: "Football", animation: "none", x: 42, y: 70, size: "small" },
+      { id: "boy-1", type: "character", emoji: "🚶", label: "Playing Kid", animation: "bounce", x: 35, y: 58, size: "medium", bubbleText: "So fun!" },
+      { id: "girl-1", type: "character", emoji: "🚶‍♀️", label: "Park Friend", animation: "none", x: 60, y: 60, size: "medium", bubbleText: "Hot day!" },
+      { id: "bench-1", type: "scenery", emoji: "🪵", label: "Park Bench", animation: "none", x: 75, y: 65, size: "medium" },
+      { id: "flower-1", type: "scenery", emoji: "🌸", label: "Blossom", animation: "wiggle", x: 25, y: 74, size: "small" }
     ]
-  },
-  {
-    id: "lost-toys",
-    title: "Lost Playground Toys 🔍🧸",
-    problem: "Kids keep losing their tiny puzzle pieces, shiny keys, and toy cars in the thick tall grass of the playground!",
-    companion_intro: "Yikes! Small toys are slipping into the giant grass jungle, and our friends are sad! What kind of neat finder tool or robotic seeker can we build on our canvas?",
-    initial_elements: [
-      { id: "grass-1", type: "scenery", emoji: "🌾", label: "Tall Grass", animation: "wiggle", x: 50, y: 68, size: "large" },
-      { id: "toy-1", type: "item", emoji: "🚗", label: "Lost Car", animation: "none", x: 48, y: 75, size: "small", bubbleText: "Where am I?" },
-      { id: "kid-1", type: "character", emoji: "😭", label: "Sad Friend", animation: "shake", x: 25, y: 55, size: "medium", bubbleText: "My toy!" },
-      { id: "question-1", type: "effect", emoji: "❓", label: "Mystery", animation: "float", x: 48, y: 55, size: "small" }
-    ]
-  },
-  {
-    id: "thirsty-birds",
-    title: "Hot Thirsty Birds 🦜💧",
-    problem: "Beautiful rainbow birds are visiting the garden, but the water fountain is dry and they are very hot and thirsty!",
-    companion_intro: "The cute garden birds are flapping around with dry beaks because the water fountain is empty! What amazing cartoon splash pool or bird-cozy oasis should we design?",
-    initial_elements: [
-      { id: "bird-1", type: "character", emoji: "🦜", label: "Thirsty Bird", animation: "shake", x: 30, y: 40, size: "medium", bubbleText: "Water please!" },
-      { id: "sun-2", type: "scenery", emoji: "☀️", label: "Blazing Sun", animation: "pulse", x: 75, y: 15, size: "large" },
-      { id: "bowl-empty", type: "item", emoji: "🥣", label: "Dry Fountain", animation: "none", x: 55, y: 65, size: "large", bubbleText: "Dry!" },
-      { id: "flower-sad", type: "scenery", emoji: "🥀", label: "Sad Flower", animation: "none", x: 75, y: 68, size: "medium" }
-    ]
-  }
-];
+  }];
 
 // Conversational cartoon scene updating endpoint
 app.post("/api/interact", async (req, res) => {
-  const { problem, message, history, current_elements } = req.body;
+  const { problem, message, history, current_elements, phase } = req.body;
 
   if (!problem) {
     return res.status(400).json({ error: "No problem text provided." });
@@ -100,28 +104,77 @@ app.post("/api/interact", async (req, res) => {
           cartoon_title: match.title,
           elements: match.initial_elements,
           narrative_summary: `Today's big trouble: ${match.problem}`,
-          question: "What should we build first?"
+          question: "What is your idea?"
         });
       }
     }
 
+    // Work out how the companion should coach on THIS turn, deterministically.
+    const kidTurns = (history || []).filter((h: any) => h.role === "user");
+    const turnCount = kidTurns.length;
+    const stuckRe = /(don'?t know|dunno|no idea|nothing|not sure|maybe|hmm+)/i;
+    const stuckStreak = (() => {
+      let n = 0;
+      for (let i = kidTurns.length - 1; i >= 0; i--) {
+        const m = String(kidTurns[i].message || "");
+        if (stuckRe.test(m) || m.trim().split(/\s+/).length <= 2) n++; else break;
+      }
+      return n;
+    })();
+
+    let TURN_DIRECTIVE = "";
+    if (phase === 'grow') {
+      TURN_DIRECTIVE = "Follow the GROW phase steps below, one question per turn, never repeating a question already in the history.";
+    } else if (stuckStreak >= 3 || turnCount >= 6) {
+      TURN_DIRECTIVE = "THE KID IS STUCK OR THIS HAS GONE ON LONG ENOUGH. STOP ASKING QUESTIONS. Pick the best idea from the whole conversation (or, if there is none, warmly propose washing the paws with warm water and soap yourself), BUILD it into the scene right now, set solved=true, and celebrate the kid's effort. Your \"question\" field must NOT ask about the trouble anymore - make it a happy closing line.";
+    } else if (stuckStreak === 2) {
+      TURN_DIRECTIVE = "The kid is stuck twice in a row. OFFER one specific idea yourself, warmly, in your speech, and ask only if they want to try it. Example shape: 'I have an idea - what if we washed his paws with warm water? Should we try that?' Do NOT ask another open question.";
+    } else if (stuckStreak === 1) {
+      TURN_DIRECTIVE = "The kid is a little stuck. Give ONE concrete everyday clue that points at a category without naming the tool, then ask a NEW question you have never asked before.";
+    } else {
+      TURN_DIRECTIVE = "The kid is engaging well. Ask ONE fresh open cross-question that goes a step deeper than anything already in the history. If they named any plausible fix, BUILD it and set solved=true instead of asking more.";
+    }
+
     const systemInstruction = `You are a creative, magical Cartoon Scene Director for kids.
+
+>>> YOUR SINGLE MOST IMPORTANT INSTRUCTION FOR THIS TURN <<<
+${TURN_DIRECTIVE}
+Obey that instruction above everything else that follows.
+
 You turn kids' spoken or typed ideas into visual elements (emojis, positions, and animations) in a live sandbox cartoon world!
 Target audience is kids aged 5-11. Keep all text output extremely simple, joyful, and short.
 
-CRITICAL PEDAGOGICAL GOAL:
-Our goal is to enable the kid to reach the solution themselves! Do NOT just instantly provide or draw the complete solution if the kid says "I don't know", "help", or gives simple or hesitant inputs. 
-Instead, your "speech" and "question" MUST guide the kid step-by-step by asking playful cross-questions and offering fun, imaginative choices (e.g., "Should we wash them with bubbly warm soap or use a giant wet sponge? Which one first?").
-Always encourage the kid to make the creative decisions and tell you what to draw next. If they say "I don't know", give them two funny options to choose from!
+CRITICAL PEDAGOGICAL GOAL - THE KID THINKS FIRST, BUT THE STORY MUST ALWAYS MOVE FORWARD:
+The kid should reach the idea themselves - but NEVER at the cost of getting stuck. Read the conversation history and count how many times the kid has already answered (turnCount below). Then follow this escalation ladder EXACTLY:
+
+TURN 1-2 (opening): Ask ONE open cross-question, no solutions, no options.
+  "What do you think we should do?" / "What happens to mud when it gets wet?"
+TURN 3-4 (nudge): If they are still stuck or vague, give a concrete sensory CLUE that points at a category without naming the tool.
+  "Hmm, when YOUR hands get sticky and dirty, where do you run to in the house?"
+TURN 5 (offer): If they are still stuck, SUGGEST one specific idea yourself, warmly, and ask if they like it.
+  "I have an idea - what if we washed his paws with warm water? Should we try that?"
+TURN 6+ (resolve): STOP asking. Build the best available idea from the whole conversation, set solved=true, and celebrate the kid.
+
+HARD RULES THAT OVERRIDE EVERYTHING:
+- NEVER ask a question that already appears in the conversation history. Read the history first. If your next question is even close to one you already asked, you MUST move one step further down the ladder instead.
+- The moment the kid names ANY plausible fix (water, soap, a mat, a towel, a stand, a machine, anything), BUILD IT and set solved=true. Do not keep probing for detail. One cross-question maximum on their idea, then build it.
+- "yes", "ok", "sure", "I don't know", or silence after you offered an idea = the kid accepted. Build it and set solved=true.
+- Never repeat the same speech twice. Each turn must add something new to the scene.
+- Their imperfect idea always beats your perfect one - build THEIR version.
+Praise the THINKING ("Smart thinking!"), not just the result.
+
+TURN COUNT: the kid has answered ${turnCount} time(s); they have been stuck ${stuckStreak} turn(s) in a row.
 
 Your primary output is a JSON describing:
 1. "speech": What the animal companion says to the kid (max 20 words!). It must be super warm, enthusiastic, and sound like a cartoon companion (e.g. Buddy the dog, Cleo the cat, Whiskers, Luna). It must either praise the kid's choice or guide the kid with a playful hint or choice!
 2. "cartoon_title": A short name for the growing masterpiece (max 3 words).
 3. "elements": The updated full array of visual cartoon elements present on screen.
    - If the Kid's latest idea/action is exactly "[INITIAL_SETUP]", you MUST generate 3 to 5 cute initial elements representing the trouble and place them nicely.
-   - For the Muddy Puppies park scene, the dog has separate feet/paws ('paw-front' with emoji 🐾 or 💩🐾, and 'paw-back' with emoji 🐾 or 💩🐾) placed right beneath the dog. Make sure to keep these paws relative to the dog's x position.
-   - Only when the kid actually decides and describes a cleaning step (like "soap", "bubbles", "shampoo", "hose", "water", "sponge", "wipe"), update the elements to represent that step! REMOVE any muddy aspects, change dirty/sad paw emojis ('💩🐾') to clean/sparkling/bubbly paw emojis ('✨🐾✨' or '🐾'), make the dog happy ('✨🐶✨' or '🐶' with happy bubbleText), and add beautiful washing elements like soap bubbles '🧼' or water splashes '💦'.
+   - The dog is one full-body dog '🐕' (id 'dog-1'). When muddy, keep the muddy paw-print trail '🐾' near him. NEVER use the '💩' emoji anywhere - for mud, use elements whose label contains 'Mud Splat' or 'Mud Patch' with an empty emoji string; the game draws real mud for those. When the kid's invention cleans him: remove all mud, prints, and splats, make the dog sparkle ('🐕' plus a separate '✨' effect beside him, happy bubbleText), and add washing elements like bubbles '🧼' and splashes '💦'.
+   - Only when the kid actually decides and describes a cleaning step (like "soap", "bubbles", "shampoo", "hose", "water", "sponge", "wipe"), update the elements to represent that step! REMOVE every muddy element (all mud patches, splats, and paw-print trails), make the dog happy with a sparkle '✨' beside him, and add beautiful washing elements like soap bubbles '🧼' or water splashes '💦'.
    - Ensure the park scenery remains beautiful, rich, and realistic with green trees '🌳', gorgeous flowers '🌸', '🌷', butterflies '🦋', a park bench '🪵', a fountain '⛲', or a shiny sun '☀️'.
+   - If the kid invents a stand, shop, or stall (like a lemonade stand): add ONE element whose label contains the word 'Stand' (e.g. label 'Lemonade Stand', id 'stand-1', emoji '🍋', size 'large') - the game draws a real stall for it. Then over the following turns show happy customers walking up and queueing ('🧒', '👧', '👵' with bubbleText like "Yum!" or "One please!"). Customers should be full-body walking people ('🚶', '🚶‍♀️', '🧍') with animation 'walk'.
+   - 'animation' may also be 'walk' for characters who are walking or arriving.
    - Emojis should be extremely expressive, bright, and fun.
    - Position 'x' is horizontal percent (10 to 90).
    - Position 'y' is vertical percent (10 to 80).
@@ -129,7 +182,23 @@ Your primary output is a JSON describing:
    - 'size' must be: 'small' | 'medium' | 'large'.
    - 'bubbleText' is an optional tiny thought or speech bubble (max 3 words) that floats above that specific item or character (e.g., "Yay, clean!", "Wee! Bath time!").
 4. "narrative_summary": A very fun, short story-book paragraph describing how the kid's creative inventions are solving this problem step-by-step. Keep it cute and positive!
-5. "question": A quick, playful, guiding cross-question to help the kid arrive at the next step or solution themselves by offering choices. Max 15 words. (e.g., "Should we wash them with bubbly soap or a giant wet sponge?")
+5. "question": ONE open cross-question that makes the kid think harder. Max 15 words. It must NEVER contain a solution, tool name, or options to pick from. (e.g., "What do you think mud is afraid of?")
+6. "invention_cost": Whole number of coins (0-10) this step's new supplies cost. Real things the kid adds (soap, sponge, umbrella, pool) cost 2-6 coins. Nothing new added = 0. Mention the cost playfully in "speech" when above 0 (e.g., "The bubbly soap costs 3 coins!").
+7. "coins_earned": Whole number of coins (0-15) earned THIS step. Award coins only when the kid's idea clearly helps (5-10), or fully solves the trouble (10-15). Otherwise 0.
+8. "solved": true ONLY when the trouble is truly fixed (paws clean, ice cream safe, toy found, birds drinking). Otherwise false.
+9. "phase_done": ONLY relevant in the GROW phase (see below). false in every other case.
+
+${phase === 'grow' ? `CURRENT PHASE: GROW - THE TROUBLE IS ALREADY SOLVED BY THE KID'S OWN INVENTION.
+Do NOT solve anything anymore. Keep "solved" true. Now grow their empathy and founder thinking, ONE question at a time, strictly in this order (move to the next step only after they answer the current one - check the conversation history to see which step you are on):
+STEP 1 - Empathy: "How many people do you think have this same problem? Do you know someone?"
+STEP 2 - Mission: "Do you want to help them too?"
+STEP 3 - Choice: If they want to help: "Do you want to help for free, or make a little ice-cream money from it?" (This is the ONLY time you may name options - it is a values choice, not a solution.)
+STEP 4 - Plan invite: If they chose money: "Should we make a plan together?" If they chose free: praise their kind heart, ask how they would still tell people about it, then set phase_done=true.
+STEP 5 - Plan, one question per turn: "How will you tell your friends and neighbors about it?" then "How could you make it bigger so more people can use it?"
+After the kid has answered at least two plan questions, set phase_done=true and give a proud, warm summary of THEIR whole plan in "speech".
+While growing: update the scene to show the idea spreading - more happy characters arriving, a little stand, more sparkles. Award small coins_earned (2-5) for thoughtful answers.
+Never push money. Helping for free is also a win. Praise every answer.` : `CURRENT PHASE: SOLVE.
+Focus ONLY on solving the trouble through the kid's own thinking. Do NOT mention money, business, customers, or selling yet - that comes later. Supplies may still cost coins (invention_cost). When the trouble is truly fixed, set solved=true and celebrate the kid's invention in "speech" - and ask NO further question about the trouble; the next stage begins automatically.`}
 
 SAFETY RULE:
 - Absolutely NO weapons, violence, bad words, romance, or personal information sharing.
@@ -145,8 +214,7 @@ Create an exciting, interactive cartoon translation! Make sure you use guiding c
     const prompt = `Translate this kid's input into the updated cartoon world state!
 Latest input: "${message}"`;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+    const response = await generateWithFallback({
       contents: prompt,
       config: {
         systemInstruction,
@@ -175,9 +243,13 @@ Latest input: "${message}"`;
               }
             },
             narrative_summary: { type: Type.STRING },
-            question: { type: Type.STRING }
+            question: { type: Type.STRING },
+            invention_cost: { type: Type.INTEGER },
+            coins_earned: { type: Type.INTEGER },
+            solved: { type: Type.BOOLEAN },
+            phase_done: { type: Type.BOOLEAN }
           },
-          required: ["speech", "cartoon_title", "elements", "narrative_summary", "question"]
+          required: ["speech", "cartoon_title", "elements", "narrative_summary", "question", "invention_cost", "coins_earned", "solved", "phase_done"]
         }
       }
     });
@@ -198,6 +270,64 @@ Latest input: "${message}"`;
       elements: current_elements || [],
       narrative_summary: "We are building an awesome solution together!",
       question: "What else should we add?"
+    });
+  }
+});
+
+// Shark Sana reviews the kid's solved invention and scores their business brain
+app.post("/api/shark", async (req, res) => {
+  const { problem, history, coins } = req.body;
+
+  try {
+    const systemInstruction = `You are Shark Sana, a warm but sharp cartoon shark investor in a kids game (ages 5-11).
+The kid just solved today's trouble with their own invention. Review their whole conversation and score them.
+
+Output JSON:
+1. "speech": Your spoken review, max 45 words. Confident, kind, a little dramatic ("Splash! I'm Shark Sana!"). Announce each score with one playful reason. If invested, say you are giving 20 coins. Never mock the kid; always end positive.
+2. "creativity": 0-10. Fresh, imaginative invention?
+3. "business_brain": 0-10. Did they ever think about WHO pays, price, or earning coins? Low if never mentioned.
+4. "math_sense": 0-10. Did costs vs earnings roughly make sense?
+5. "invested": true if average of the three scores is 7 or higher.
+6. "tip": ONE practical, kid-level business tip, max 12 words.
+
+SAFETY: no violence, romance, bad words, or personal data. Simple words only.
+
+Today's trouble: "${problem}"
+Kid's current coins: ${coins}
+Conversation: ${JSON.stringify(history || [])}`;
+
+    const response = await generateWithFallback({
+      contents: "Review the kid's invention and give your shark verdict!",
+      config: {
+        systemInstruction,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            speech: { type: Type.STRING },
+            creativity: { type: Type.INTEGER },
+            business_brain: { type: Type.INTEGER },
+            math_sense: { type: Type.INTEGER },
+            invested: { type: Type.BOOLEAN },
+            tip: { type: Type.STRING }
+          },
+          required: ["speech", "creativity", "business_brain", "math_sense", "invested", "tip"]
+        }
+      }
+    });
+
+    const text = response.text;
+    if (!text) throw new Error("No response from Gemini.");
+    res.json(JSON.parse(text));
+  } catch (error: any) {
+    console.error("Error in /api/shark:", error);
+    res.json({
+      speech: "Splash! What a day of inventing! You solved the trouble with your own idea - I love it. Keep thinking about who pays, little founder!",
+      creativity: 8,
+      business_brain: 6,
+      math_sense: 6,
+      invested: true,
+      tip: "Ask who else would pay for your idea!"
     });
   }
 });

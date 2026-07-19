@@ -73,3 +73,15 @@
 .animate-cloud-fast {
   animation: cloud-slide 30s linear infinite;
 }
+
+@keyframes cartoon-walk {
+  0% { transform: rotate(-4deg) translateY(0); }
+  25% { transform: rotate(0deg) translateY(-3px); }
+  50% { transform: rotate(4deg) translateY(0); }
+  75% { transform: rotate(0deg) translateY(-3px); }
+  100% { transform: rotate(-4deg) translateY(0); }
+}
+.animate-cartoon-walk {
+  animation: cartoon-walk 0.5s linear infinite;
+  transform-origin: 50% 90%;
+}

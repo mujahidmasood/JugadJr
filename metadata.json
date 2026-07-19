@@ -1,6 +1,6 @@
 {
-  "name": "Cartoon Solver",
-  "description": "An interactive cartoon canvas where kids enter a problem, and then talk to a friendly AI companion to build animated visual solutions in real time.",
+  "name": "JugadJr",
+  "description": "Kids hear a real-world trouble, speak their own invention, and watch it come alive on a cartoon canvas — then a friendly shark investor scores their business brain.",
   "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

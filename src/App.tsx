@@ -23,7 +23,7 @@ const CURATED_PROBLEMS: CuratedProblem[] = [
     id: "muddy-puppies",
     title: "Muddy Puppies 🐶",
     problem: "When dogs run in the wet park grass, their paws get super muddy and they ruin clean carpets!",
-    companion_intro: "Oh no! The puppy has separate cute paws that get super muddy while playing in the park! What should we build on our canvas to clean his feet?",
+    companion_intro: "Oh no! The puppy got his paws all muddy playing in the park! What do you think we should do?",
     initial_elements: [
       { id: "sun-park", type: "scenery", emoji: "☀️", label: "Golden Sun", animation: "pulse", x: 85, y: 12, size: "large" },
       { id: "tree-park", type: "scenery", emoji: "🌳", label: "Big Oak Tree", animation: "wiggle", x: 18, y: 32, size: "large" },
@@ -31,53 +31,31 @@ const CURATED_PROBLEMS: CuratedProblem[] = [
       { id: "butterfly-park", type: "scenery", emoji: "🦋", label: "Fluttering Butterfly", animation: "float", x: 26, y: 22, size: "small" },
       { id: "flower-park-1", type: "scenery", emoji: "🌸", label: "Pink Blossom", animation: "wiggle", x: 22, y: 72, size: "small" },
       { id: "flower-park-2", type: "scenery", emoji: "🌷", label: "Red Tulip", animation: "wiggle", x: 58, y: 74, size: "small" },
-      { id: "dog-1", type: "character", emoji: "🐶", label: "Happy Puppy", animation: "bounce", x: 15, y: 55, size: "large", bubbleText: "Let's walk!" },
-      { id: "paw-front", type: "item", emoji: "🐾", label: "Front Paw", animation: "bounce", x: 12, y: 66, size: "small" },
-      { id: "paw-back", type: "item", emoji: "🐾", label: "Back Paw", animation: "bounce", x: 18, y: 66, size: "small" },
-      { id: "mud-1", type: "scenery", emoji: "💩", label: "Wet Mud Patch", animation: "none", x: 42, y: 70, size: "medium" },
+      { id: "dog-1", type: "character", emoji: "🐕", label: "Happy Puppy", animation: "bounce", x: 15, y: 58, size: "large", bubbleText: "Let's walk!" },
+      { id: "mud-1", type: "scenery", emoji: "", label: "Wet Mud Patch", animation: "none", x: 42, y: 70, size: "medium" },
       { id: "rug-1", type: "item", emoji: "🏠", label: "Clean House", animation: "pulse", x: 80, y: 58, size: "large", bubbleText: "Keep me clean!" }
     ]
   },
   {
-    id: "sad-squirrels",
-    title: "Melting Squirrel Ice Cream 🐿️🍦",
-    problem: "The squirrels' homemade nut-ice-cream is melting super fast under the burning summer sun!",
-    companion_intro: "Look! The hot summer sun is melting the squirrels' delicious acorn ice cream! What cool cartoon gadget can we create to shield and cool them?",
+    id: "thirsty-park",
+    title: "Thirsty Park Day 🍋",
+    problem: "It is SO hot at the park today. Everyone is thirsty and grumpy, and there is nothing to drink anywhere!",
+    companion_intro: "Phew, what a hot day at the park! Everyone is thirsty and grumpy, and there is nothing to drink anywhere! What do you think we should do?",
     initial_elements: [
-      { id: "sun-1", type: "scenery", emoji: "☀️", label: "Friendly Sun", animation: "pulse", x: 50, y: 15, size: "large", bubbleText: "Nice day!" },
-      { id: "squirrel-1", type: "character", emoji: "🐿️", label: "Happy Squirrel", animation: "none", x: 30, y: 60, size: "medium", bubbleText: "My ice cream!" },
-      { id: "cart-1", type: "item", emoji: "🍦", label: "Acorn Ice Cream", animation: "none", x: 45, y: 62, size: "large", bubbleText: "Cold & sweet!" }
+      { id: "sun-hot", type: "scenery", emoji: "☀️", label: "Blazing Sun", animation: "pulse", x: 80, y: 12, size: "large" },
+      { id: "tree-park", type: "scenery", emoji: "🌳", label: "Shady Tree", animation: "wiggle", x: 15, y: 30, size: "large" },
+      { id: "kid-ball", type: "character", emoji: "⚽", label: "Football", animation: "none", x: 42, y: 70, size: "small" },
+      { id: "boy-1", type: "character", emoji: "🚶", label: "Playing Kid", animation: "bounce", x: 35, y: 58, size: "medium", bubbleText: "So fun!" },
+      { id: "girl-1", type: "character", emoji: "🚶‍♀️", label: "Park Friend", animation: "none", x: 60, y: 60, size: "medium", bubbleText: "Hot day!" },
+      { id: "bench-1", type: "scenery", emoji: "🪵", label: "Park Bench", animation: "none", x: 75, y: 65, size: "medium" },
+      { id: "flower-1", type: "scenery", emoji: "🌸", label: "Blossom", animation: "wiggle", x: 25, y: 74, size: "small" }
     ]
-  },
-  {
-    id: "lost-toys",
-    title: "Lost Playground Toys 🔍🧸",
-    problem: "Kids keep losing their tiny puzzle pieces, shiny keys, and toy cars in the thick tall grass of the playground!",
-    companion_intro: "Yikes! Small toys are slipping into the giant grass jungle! What kind of neat finder tool or robotic seeker can we build on our canvas?",
-    initial_elements: [
-      { id: "grass-1", type: "scenery", emoji: "🌾", label: "Tall Grass", animation: "wiggle", x: 50, y: 68, size: "large" },
-      { id: "toy-1", type: "item", emoji: "🚗", label: "My Toy Car", animation: "none", x: 20, y: 62, size: "medium", bubbleText: "Weeee!" },
-      { id: "kid-1", type: "character", emoji: "👧", label: "Happy Kid", animation: "bounce", x: 12, y: 58, size: "medium", bubbleText: "Play time!" }
-    ]
-  },
-  {
-    id: "thirsty-birds",
-    title: "Hot Thirsty Birds 🦜💧",
-    problem: "Beautiful rainbow birds are visiting the garden, but the water fountain is dry and they are very hot and thirsty!",
-    companion_intro: "The cute garden birds are flapping around with dry beaks because the water fountain is empty! What amazing cartoon splash pool or bird-cozy oasis should we design?",
-    initial_elements: [
-      { id: "bird-1", type: "character", emoji: "🦜", label: "Garden Bird", animation: "float", x: 30, y: 35, size: "medium", bubbleText: "Chirp chirp!" },
-      { id: "sun-2", type: "scenery", emoji: "☀️", label: "Golden Sun", animation: "pulse", x: 75, y: 15, size: "large" },
-      { id: "bowl-empty", type: "item", emoji: "🥣", label: "Water Fountain", animation: "none", x: 55, y: 65, size: "large", bubbleText: "Nice water!" },
-      { id: "splash-1", type: "effect", emoji: "💦", label: "Splash", animation: "bounce", x: 55, y: 52, size: "small" }
-    ]
-  }
-];
+  }];
 
 // Helper to speak text-to-speech for animal companions
-const speakText = (text: string, isMuted: boolean, pitch = 1.1, rate = 0.95) => {
-  if (isMuted) return;
-  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+const speakText = (text: string, isMuted: boolean, pitch = 1.1, rate = 0.95, onEnd?: () => void) => {
+  if (isMuted) { onEnd?.(); return; }
+  if (typeof window === 'undefined' || !window.speechSynthesis) { onEnd?.(); return; }
 
   window.speechSynthesis.cancel(); // Stop any current speech immediately
 
@@ -95,13 +73,14 @@ const speakText = (text: string, isMuted: boolean, pitch = 1.1, rate = 0.95) => 
     }
   }
 
+  if (onEnd) utterance.onend = () => onEnd();
   window.speechSynthesis.speak(utterance);
 };
 
 export default function App() {
   // Personalized Kid Name
   const [kidName, setKidName] = useState<string>(() => {
-    return localStorage.getItem("cartoon_kid_name") || "";
+    return localStorage.getItem("cartoon_kid_name") || "Abu";
   });
   const [tempName, setTempName] = useState<string>("");
 
@@ -116,7 +95,7 @@ export default function App() {
   const [speechText, setSpeechText] = useState<string>("");
   const [cartoonTitle, setCartoonTitle] = useState<string>(CURATED_PROBLEMS[0].title);
   const [narrativeSummary, setNarrativeSummary] = useState<string>(`Today's big trouble: ${CURATED_PROBLEMS[0].problem}`);
-  const [questionText, setQuestionText] = useState<string>("What should we build first?");
+  const [questionText, setQuestionText] = useState<string>("What is your idea?");
   
   // Input fields
   const [messageInput, setMessageInput] = useState<string>("");
@@ -130,19 +109,60 @@ export default function App() {
   
   // Sound
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  
+
   // Simulation Running State
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
+
+  // Journey phase: solve the trouble first, then grow it into helping others
+  const [phase, setPhase] = useState<'solve' | 'grow'>('solve');
+
+  // Coins: the kid's business wallet
+  const [coins, setCoins] = useState<number>(() => {
+    const saved = localStorage.getItem("jugadjr_coins");
+    return saved ? parseInt(saved, 10) : 20;
+  });
+  const [coinFlash, setCoinFlash] = useState<'earn' | 'spend' | null>(null);
+
+  // Hands-free: auto-listen after the companion asks a question
+  const [handsFree, setHandsFree] = useState<boolean>(true);
+
+  // Shark Sana review
+  const [sharkOpen, setSharkOpen] = useState<boolean>(false);
+  const [sharkLoading, setSharkLoading] = useState<boolean>(false);
+  const [sharkData, setSharkData] = useState<{
+    speech: string; creativity: number; business_brain: number;
+    math_sense: number; invested: boolean; tip: string;
+  } | null>(null);
+
+  const applyCoins = (earned: number, spent: number) => {
+    const delta = (earned || 0) - (spent || 0);
+    if (delta === 0) return;
+    setCoins(prev => {
+      const next = Math.max(0, prev + delta);
+      localStorage.setItem("jugadjr_coins", String(next));
+      return next;
+    });
+    setCoinFlash(delta > 0 ? 'earn' : 'spend');
+    setTimeout(() => setCoinFlash(null), 1200);
+  };
 
   // Speech Recognition
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const recognitionRef = useRef<any>(null);
 
+  // Story log auto-scroll
+  const historyRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (historyRef.current) {
+      historyRef.current.scrollTop = historyRef.current.scrollHeight;
+    }
+  }, [history]);
+
   // Minimal Text/Story Modal View toggle
   const [showStoryBook, setShowStoryBook] = useState<boolean>(false);
-  
-  // Language Support
-  const [activeLang, setActiveLang] = useState<'english' | 'urdu' | 'german'>('english');
+
+  // Hot, dusty scene (thirsty park) vs cool green park
+  const isHotScene = activeProblemId === "thirsty-park";
 
   // Load or Reset a problem scene
   const handleLoadOrGenerateScene = async (customProblem: string, problemId?: string) => {
@@ -150,6 +170,7 @@ export default function App() {
     setErrorMsg(null);
     setHistory([]);
     setMessageInput("");
+    setPhase('solve');
     setProblemText(customProblem);
     if (problemId) {
       setActiveProblemId(problemId);
@@ -192,7 +213,8 @@ export default function App() {
       setQuestionText(data.question);
       setHistory([{ role: 'model', message: intro }]);
 
-      triggerCompanionVoice(intro);
+      // Intro finishes, then the trouble plays out by itself - no extra tap needed
+      triggerCompanionVoice(intro, matchedPreset ? () => runTroubleSimulation(matchedPreset.id) : autoListenAfterQuestion);
     } catch (err: any) {
       console.error(err);
       // Fallback if network fails
@@ -202,23 +224,29 @@ export default function App() {
       setSpeechText(introText);
       setCartoonTitle(matchedPreset ? matchedPreset.title : "Magic Challenge");
       setNarrativeSummary(`Today's big trouble: ${customProblem}`);
-      setQuestionText("What should we build first?");
-      triggerCompanionVoice(introText);
+      setQuestionText("What is your idea?");
+      triggerCompanionVoice(introText, matchedPreset ? () => runTroubleSimulation(matchedPreset.id) : autoListenAfterQuestion);
     } finally {
       setIsLoading(false);
     }
   };
 
   // Trigger speech synthesis & speaking animation for current companion
-  const triggerCompanionVoice = (text: string) => {
+  const triggerCompanionVoice = (text: string, onDone?: () => void) => {
     const config = COMPANIONS.find(c => c.id === companion) || COMPANIONS[0];
     setIsCompanionTalking(true);
-    speakText(text, isMuted, config.pitch, config.rate);
-    
+    speakText(text, isMuted, config.pitch, config.rate, onDone);
+
     // Stop the bounce talk animation after a fitting delay based on text length
     setTimeout(() => {
       setIsCompanionTalking(false);
     }, Math.min(8000, text.length * 65));
+  };
+
+  // Companion finished asking a question: open the mic automatically (hands-free flow)
+  const autoListenAfterQuestion = () => {
+    if (!handsFree || isMuted || sharkOpen) return;
+    setTimeout(() => startRecognition(true), 250);
   };
 
   // Switch companion and voice greet
@@ -239,142 +267,99 @@ export default function App() {
     }, 4000);
   };
 
-  // Run Walk Simulator and Get Dirty easily!
-  const runTroubleSimulation = () => {
+  // Run the trouble simulation; plays automatically when a scene loads
+  const runTroubleSimulation = (forcedId?: string) => {
     if (isSimulating) return;
     setIsSimulating(true);
+    const probId = forcedId || activeProblemId;
 
-    if (activeProblemId === "muddy-puppies") {
-      // Step-by-step smooth custom walk animation for Muddy Puppies
-      // Reset first to clean puppy on the left with full park scenery
-      setElements([
-        { id: "sun-park", type: "scenery", emoji: "☀️", label: "Golden Sun", animation: "pulse", x: 85, y: 12, size: "large" },
-        { id: "tree-park", type: "scenery", emoji: "🌳", label: "Big Oak Tree", animation: "wiggle", x: 18, y: 32, size: "large" },
-        { id: "bench-park", type: "scenery", emoji: "🪵", label: "Park Bench", animation: "none", x: 50, y: 58, size: "medium" },
-        { id: "butterfly-park", type: "scenery", emoji: "🦋", label: "Fluttering Butterfly", animation: "float", x: 26, y: 22, size: "small" },
-        { id: "flower-park-1", type: "scenery", emoji: "🌸", label: "Pink Blossom", animation: "wiggle", x: 22, y: 72, size: "small" },
-        { id: "flower-park-2", type: "scenery", emoji: "🌷", label: "Red Tulip", animation: "wiggle", x: 58, y: 74, size: "small" },
-        { id: "dog-1", type: "character", emoji: "🐶", label: "Happy Puppy", animation: "none", x: 15, y: 55, size: "large", bubbleText: "Let's walk!" },
-        { id: "paw-front", type: "item", emoji: "🐾", label: "Front Paw", animation: "none", x: 12, y: 66, size: "small" },
-        { id: "paw-back", type: "item", emoji: "🐾", label: "Back Paw", animation: "none", x: 18, y: 66, size: "small" },
-        { id: "mud-1", type: "scenery", emoji: "💩", label: "Wet Mud Patch", animation: "none", x: 42, y: 70, size: "medium" },
-        { id: "rug-1", type: "item", emoji: "🏠", label: "Clean House", animation: "pulse", x: 80, y: 58, size: "large", bubbleText: "Keep me clean!" }
-      ]);
+    if (probId === "muddy-puppies") {
+      // Full walk: dog trots across the park, hits mud, tracks it to the house
+      const preset = CURATED_PROBLEMS.find(p => p.id === "muddy-puppies")!;
+      setElements(preset.initial_elements.map(el =>
+        el.id === "dog-1" ? { ...el, animation: "walk", bubbleText: "Let's walk!" } : el
+      ));
 
       let currentX = 15;
       let hasSteppedInMud = false;
       let isVoicingMud = false;
       let stepCounter = 0;
-      let tracks: { id: string, type: "effect", emoji: "🐾", label: string, animation: "none", x: number, y: number, size: "small" }[] = [];
+      let tracks: { id: string, type: "effect", emoji: string, label: string, animation: "none", x: number, y: number, size: "small" }[] = [];
 
       const walkInterval = setInterval(() => {
-        currentX += 0.5; // Walk forward smoothly
+        currentX += 0.5;
         stepCounter++;
-
-        // Calculate alternating paw lifting to look like continuous walking!
-        const alternate = Math.sin(stepCounter * 0.4);
-        const frontY = alternate > 0 ? 63 : 67;
-        const backY = alternate > 0 ? 67 : 63;
-
-        // Front paw sits slightly ahead, back paw slightly behind
-        const frontX = currentX - 3;
-        const backX = currentX + 3;
 
         if (currentX >= 42 && !hasSteppedInMud) {
           hasSteppedInMud = true;
+          tracks.push({ id: "splash-mud", type: "effect", emoji: "💦", label: "Splash", animation: "none", x: 42, y: 64, size: "small" });
         }
 
         if (hasSteppedInMud && !isVoicingMud) {
           isVoicingMud = true;
-          triggerCompanionVoice("Oh look! Buddy stepped right in the squishy wet mud! His separate paws are completely muddy!");
+          triggerCompanionVoice("Oh look! Buddy stepped right in the squishy wet mud! His paws are completely muddy now!");
         }
 
-        // Drop footprints after stepping in mud
-        if (hasSteppedInMud && stepCounter % 12 === 0 && currentX < 80) {
+        // Muddy paw prints trail behind, staggered like real steps
+        if (hasSteppedInMud && stepCounter % 12 === 0 && currentX < 66) {
           tracks.push({
             id: `track-${stepCounter}`,
             type: "effect",
             emoji: "🐾",
             label: "Muddy Print",
             animation: "none",
-            x: currentX,
-            y: 68,
+            x: currentX - 4,
+            y: tracks.length % 2 === 0 ? 66 : 69,
             size: "small"
           });
         }
 
-        if (currentX >= 80) {
+        if (currentX >= 66) {
           clearInterval(walkInterval);
           setElements(prev => {
-            const decorAndStatic = prev.filter(el => 
-              !["dog-1", "paw-front", "paw-back", "rug-1"].includes(el.id) && !el.id.startsWith("track-")
+            const scenery = prev.filter(el =>
+              !["dog-1", "rug-1"].includes(el.id) && !el.id.startsWith("track-") && el.id !== "splash-mud"
             );
-
             return [
-              ...decorAndStatic,
+              ...scenery,
               ...tracks,
-              { id: "dog-1", type: "character", emoji: "🐶", label: "Muddy Pup", animation: "bounce", x: 80, y: 53, size: "large", bubbleText: "Uh-oh, dirty floor!" },
-              { id: "paw-front", type: "item", emoji: "💩🐾", label: "Muddy Front Paw", animation: "shake", x: 77, y: 64, size: "small", bubbleText: "Super dirty!" },
-              { id: "paw-back", type: "item", emoji: "💩🐾", label: "Muddy Back Paw", animation: "shake", x: 83, y: 64, size: "small" },
-              { id: "rug-1", type: "item", emoji: "🏠🛖", label: "Dirty Floor!", animation: "pulse", x: 80, y: 58, size: "large", bubbleText: "Oh no, dirty mud!" }
+              { id: "dog-1", type: "character", emoji: "🐕", label: "Muddy Pup", animation: "bounce", x: 64, y: 56, size: "large", bubbleText: "Uh-oh, so muddy!" },
+              { id: "splat-1", type: "effect", emoji: "", label: "Mud Splat", animation: "none", x: 72, y: 70, size: "small" },
+              { id: "splat-2", type: "effect", emoji: "", label: "Mud Splat", animation: "none", x: 79, y: 73, size: "small" },
+              { id: "rug-1", type: "item", emoji: "🏠", label: "Dirty Floor!", animation: "shake", x: 86, y: 56, size: "large", bubbleText: "My clean carpet!" }
             ];
           });
 
-          const introText = kidName 
-            ? `Nooo! ${kidName}, Buddy walked on the clean carpet with mud! Look at his separate paws, they are so muddy! Let's clean his feet first!`
-            : "Nooo! Buddy walked on the clean carpet with mud! Look at his separate paws, they are so muddy! Quick, tell me how we should clean his feet up!";
+          const introText = kidName
+            ? `Nooo! ${kidName}, Buddy tracked mud all over the clean carpet! His paws are so muddy! What is your idea?`
+            : "Nooo! Buddy tracked mud all over the clean carpet! His paws are so muddy! What is your idea?";
           setSpeechText(introText);
-          setQuestionText("What should we use first? Soap? Bubble water?");
-          triggerCompanionVoice(introText);
+          setQuestionText("His paws are SO muddy... what is YOUR idea to fix this?");
+          triggerCompanionVoice(introText, autoListenAfterQuestion);
           setIsSimulating(false);
           return;
         }
 
-        // Regular continuous update
         setElements(prev => {
-          const decorAndStatic = prev.filter(el => 
-            !["dog-1", "paw-front", "paw-back", "rug-1"].includes(el.id) && !el.id.startsWith("track-")
+          const scenery = prev.filter(el =>
+            !["dog-1", "rug-1"].includes(el.id) && !el.id.startsWith("track-") && el.id !== "splash-mud"
           );
-          
           const rug = prev.find(el => el.id === "rug-1") || { id: "rug-1", type: "item" as const, emoji: "🏠", label: "Clean House", animation: "pulse" as const, x: 80, y: 58, size: "large" as const };
-
           const dogBubble = currentX < 30 ? "Let's walk!" : currentX < 42 ? "Grass is wet!" : "SPLAT! So muddy!";
-          const pawEmoji = hasSteppedInMud ? "💩🐾" : "🐾";
 
           return [
-            ...decorAndStatic,
+            ...scenery,
             ...tracks,
             {
               id: "dog-1",
               type: "character",
-              emoji: "🐶",
+              emoji: "🐕",
               label: hasSteppedInMud ? "Muddy Pup" : "Happy Puppy",
-              animation: "none",
+              animation: "walk",
               x: currentX,
-              y: 55,
+              y: 57,
               size: "large",
               bubbleText: dogBubble
-            },
-            {
-              id: "paw-front",
-              type: "item",
-              emoji: pawEmoji,
-              label: hasSteppedInMud ? "Muddy Front Paw" : "Front Paw",
-              animation: "none",
-              x: frontX,
-              y: frontY,
-              size: "small",
-              bubbleText: hasSteppedInMud ? "Ouch, mud!" : undefined
-            },
-            {
-              id: "paw-back",
-              type: "item",
-              emoji: pawEmoji,
-              label: hasSteppedInMud ? "Muddy Back Paw" : "Back Paw",
-              animation: "none",
-              x: backX,
-              y: backY,
-              size: "small"
             },
             rug
           ];
@@ -382,100 +367,39 @@ export default function App() {
 
       }, 30);
 
-    } else if (activeProblemId === "sad-squirrels") {
-      // Hot Sun simulation
-      setElements([
-        { id: "sun-1", type: "scenery", emoji: "☀️", label: "Friendly Sun", animation: "pulse", x: 50, y: 15, size: "large", bubbleText: "Nice day!" },
-        { id: "squirrel-1", type: "character", emoji: "🐿️", label: "Happy Squirrel", animation: "none", x: 30, y: 60, size: "medium", bubbleText: "My ice cream!" },
-        { id: "cart-1", type: "item", emoji: "🍦", label: "Acorn Ice Cream", animation: "none", x: 45, y: 62, size: "large", bubbleText: "Cold & sweet!" }
-      ]);
+    } else if (probId === "thirsty-park") {
+      // Hot park day: everyone gets thirsty, no drinks anywhere
+      const preset = CURATED_PROBLEMS.find(p => p.id === "thirsty-park")!;
+      setElements(preset.initial_elements);
 
       setTimeout(() => {
-        setElements(prev => prev.map(el => el.id === "sun-1" ? { ...el, emoji: "🥵☀️", label: "SUPER HOT SUN!", size: "large", animation: "bounce", bubbleText: "Blazing fire!" } : el));
+        setElements(prev => prev.map(el =>
+          el.id === "sun-hot" ? { ...el, emoji: "🥵☀️", label: "SUPER HOT SUN!", animation: "bounce", bubbleText: "Blazing!" } : el
+        ));
       }, 1000);
 
       setTimeout(() => {
         setElements(prev => [
           ...prev.map(el => {
-            if (el.id === "squirrel-1") return { ...el, emoji: "😭🐿️", label: "Sweating Squirrel", animation: "shake", bubbleText: "It's melting!" };
-            if (el.id === "cart-1") return { ...el, emoji: "🍦💧", label: "Melting Ice Cream", animation: "wiggle", bubbleText: "Drip drop!" };
+            if (el.id === "boy-1") return { ...el, emoji: "🥵", label: "Thirsty Kid", animation: "shake", bubbleText: "So thirsty!" };
+            if (el.id === "girl-1") return { ...el, emoji: "😓", label: "Tired Friend", animation: "shake", bubbleText: "Need a drink..." };
             return el;
           }),
-          { id: "sweat-1", type: "effect", emoji: "💦", label: "Hot sweat", animation: "float", x: 30, y: 50, size: "small" },
-          { id: "sweat-2", type: "effect", emoji: "💦", label: "Hot sweat", animation: "float", x: 45, y: 52, size: "small" }
-        ]);
-
-        const text = kidName 
-          ? `Phew! ${kidName}, the sun got super hot and the squirrels ice cream is melting! What cool cartoon gadget can we add to cool them?`
-          : "Phew! The sun got super hot and the squirrels ice cream is melting! What cool cartoon gadget can we add to cool them?";
-        setSpeechText(text);
-        setQuestionText("Should we add a big umbrella or a snow machine?");
-        triggerCompanionVoice(text);
-        setIsSimulating(false);
-      }, 3000);
-
-    } else if (activeProblemId === "lost-toys") {
-      // Lost Playground Toys simulation
-      setElements([
-        { id: "grass-1", type: "scenery", emoji: "🌾", label: "Tall Grass", animation: "wiggle", x: 50, y: 68, size: "large" },
-        { id: "toy-1", type: "item", emoji: "🚗", label: "My Toy Car", animation: "none", x: 20, y: 62, size: "medium", bubbleText: "Weeee!" },
-        { id: "kid-1", type: "character", emoji: "👧", label: "Happy Kid", animation: "bounce", x: 12, y: 58, size: "medium", bubbleText: "Play time!" }
-      ]);
-
-      setTimeout(() => {
-        setElements(prev => prev.map(el => el.id === "toy-1" ? { ...el, x: 45, y: 64, bubbleText: "Whoops! Slipped!" } : el));
-      }, 1000);
-
-      setTimeout(() => {
-        setElements(prev => [
-          ...prev.map(el => {
-            if (el.id === "toy-1") return { ...el, x: 50, y: 75, size: "small", bubbleText: "Help, I'm lost!" };
-            if (el.id === "kid-1") return { ...el, emoji: "😭👧", label: "Sad Kid", animation: "shake", bubbleText: "Where is it?" };
-            return el;
-          }),
-          { id: "mystery-1", type: "effect", emoji: "❓", label: "Mystery Query", animation: "float", x: 50, y: 55, size: "medium" }
+          { id: "sweat-1", type: "effect", emoji: "💦", label: "Sweat", animation: "float", x: 35, y: 48, size: "small" },
+          { id: "sweat-2", type: "effect", emoji: "💦", label: "Sweat", animation: "float", x: 60, y: 50, size: "small" }
         ]);
 
         const text = kidName
-          ? `Oh no, ${kidName}! The toy car slipped right into the thick tall grass! We can't see it! What should we build to find it?`
-          : "Oh no! The toy car slipped right into the thick tall grass! We can't see it! What should we build to find it?";
+          ? `Phew, ${kidName}! The sun turned the park into an oven! Everyone is thirsty and grumpy, and there is nothing to drink anywhere!`
+          : "Phew! The sun turned the park into an oven! Everyone is thirsty and grumpy, and there is nothing to drink anywhere!";
         setSpeechText(text);
-        setQuestionText("A metal finder? A helper robot?");
-        triggerCompanionVoice(text);
+        setQuestionText("Everyone is SO thirsty... what is YOUR idea?");
+        triggerCompanionVoice(text, autoListenAfterQuestion);
         setIsSimulating(false);
       }, 3000);
 
-    } else if (activeProblemId === "thirsty-birds") {
-      // Thirsty birds empty fountain simulation
-      setElements([
-        { id: "bird-1", type: "character", emoji: "🦜", label: "Garden Bird", animation: "float", x: 30, y: 35, size: "medium", bubbleText: "Chirp chirp!" },
-        { id: "sun-2", type: "scenery", emoji: "☀️", label: "Golden Sun", animation: "pulse", x: 75, y: 15, size: "large" },
-        { id: "bowl-empty", type: "item", emoji: "🥣", label: "Water Fountain", animation: "none", x: 55, y: 65, size: "large", bubbleText: "Nice water!" },
-        { id: "splash-1", type: "effect", emoji: "💦", label: "Splash", animation: "bounce", x: 55, y: 52, size: "small" }
-      ]);
-
-      setTimeout(() => {
-        setElements(prev => prev.filter(el => el.id !== "splash-1"));
-      }, 1000);
-
-      setTimeout(() => {
-        setElements(prev => [
-          ...prev.map(el => {
-            if (el.id === "bird-1") return { ...el, emoji: "🥺🦜", label: "Thirsty Bird", animation: "shake", bubbleText: "Water please!" };
-            if (el.id === "bowl-empty") return { ...el, emoji: "🥣", label: "Bone Dry Basin", bubbleText: "Completely dry!" };
-            return el;
-          }),
-          { id: "sad-flower", type: "scenery", emoji: "🥀", label: "Wilted Flower", animation: "none", x: 80, y: 68, size: "medium" }
-        ]);
-
-        const text = kidName
-          ? `Oh no, ${kidName}! The water fountain dried out under the hot sun! The parrot has dry feathers. What should we do?`
-          : "Oh no! The water fountain dried out under the hot sun! The parrot has dry feathers. What should we do?";
-        setSpeechText(text);
-        setQuestionText("How can we spray fresh splash water?");
-        triggerCompanionVoice(text);
-        setIsSimulating(false);
-      }, 2500);
+    } else {
+      setIsSimulating(false);
     }
   };
 
@@ -504,7 +428,8 @@ export default function App() {
           problem: problemText,
           message: contextAdjustedQuery,
           history: newHistory,
-          current_elements: elements
+          current_elements: elements,
+          phase
         })
       });
 
@@ -514,20 +439,34 @@ export default function App() {
 
       const data = await response.json();
       setElements(data.elements || []);
-      
+
       // Personalize speech response
       let updatedSpeech = data.speech;
       if (kidName && !updatedSpeech.includes(kidName)) {
         updatedSpeech = `${kidName}! ${updatedSpeech}`;
       }
       setSpeechText(updatedSpeech);
-      
+
       setCartoonTitle(data.cartoon_title || "Magic World");
       setNarrativeSummary(data.narrative_summary);
       setQuestionText(data.question);
       setHistory([...newHistory, { role: 'model', message: updatedSpeech }]);
 
-      triggerCompanionVoice(updatedSpeech);
+      applyCoins(data.coins_earned || 0, data.invention_cost || 0);
+
+      // Safety net: if the solve phase drags on, move the journey forward anyway
+      const kidTurns = newHistory.filter(h => h.role === 'user').length;
+
+      if (phase === 'solve' && (data.solved || kidTurns >= 8)) {
+        // Trouble fixed by the kid's own idea: move into the grow journey
+        setPhase('grow');
+        triggerCompanionVoice(updatedSpeech, autoListenAfterQuestion);
+      } else if (phase === 'grow' && data.phase_done) {
+        // Empathy + plan complete: NOW Shark Sana swims in
+        triggerCompanionVoice(updatedSpeech, () => runSharkReview([...newHistory, { role: 'model', message: updatedSpeech }]));
+      } else {
+        triggerCompanionVoice(updatedSpeech, autoListenAfterQuestion);
+      }
     } catch (err: any) {
       console.error(err);
       setErrorMsg("Oh no! The cartoon world got stuck. Say that again, kid boss!");
@@ -536,26 +475,46 @@ export default function App() {
     }
   };
 
-  // Set up microphone voice synthesis
-  const toggleSpeechRecognition = () => {
-    if (isRecording) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
+  // Shark Sana reviews the solved invention and scores the kid's business brain
+  const runSharkReview = async (fullHistory: ChatHistoryItem[]) => {
+    setSharkOpen(true);
+    setSharkLoading(true);
+    setSharkData(null);
+    try {
+      const response = await fetch("/api/shark", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ problem: problemText, history: fullHistory, coins })
+      });
+      const data = await response.json();
+      setSharkData(data);
+      speakText(data.speech, isMuted, 0.75, 0.92);
+      if (data.invested) {
+        setTimeout(() => applyCoins(20, 0), 1500);
       }
-      setIsRecording(false);
-      return;
+    } catch (err) {
+      console.error(err);
+      setSharkOpen(false);
+    } finally {
+      setSharkLoading(false);
     }
+  };
 
+  // Start listening on the mic; auto=true means it was opened hands-free after a question
+  const startRecognition = (auto = false) => {
     const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognitionClass) {
-      setErrorMsg("Oops! Your browser doesn't support speaking with mic. Type your idea instead!");
+      if (!auto) setErrorMsg("Oops! Your browser doesn't support speaking with mic. Type your idea instead!");
       return;
+    }
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
     }
 
     const rec = new SpeechRecognitionClass();
     rec.continuous = false;
     rec.interimResults = false;
-    rec.lang = activeLang === 'urdu' ? 'ur-PK' : activeLang === 'german' ? 'de-DE' : 'en-US';
+    rec.lang = 'en-US';
 
     rec.onstart = () => {
       setIsRecording(true);
@@ -586,6 +545,18 @@ export default function App() {
       console.error(err);
       setIsRecording(false);
     }
+  };
+
+  // Mic button tap: stop if listening, otherwise start
+  const toggleSpeechRecognition = () => {
+    if (isRecording) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsRecording(false);
+      return;
+    }
+    startRecognition(false);
   };
 
   // Tap element on canvas for interactive fun (cycles wiggles & animations)
@@ -643,10 +614,10 @@ export default function App() {
 
             <div className="space-y-2">
               <h3 className="text-2xl font-black text-slate-900 tracking-tight">
-                Hey Kid Boss! 🎨✨
+                Hey Little Founder! 💡✨
               </h3>
               <p className="text-xs text-slate-500 font-bold leading-relaxed">
-                Welcome to Cartoon Solver! Tell me your name, and we'll start drawing magical visual solutions to help cartoon characters on the screen!
+                Welcome to JugadJr! Every day brings a real trouble. YOU invent the fix, build it on screen with your voice, earn coins - and impress Shark Sana the investor!
               </p>
             </div>
 
@@ -680,14 +651,9 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-black tracking-tight text-slate-900 flex items-center gap-1.5">
-                Cartoon Solver
-                {kidName && (
-                  <span className="text-[10px] bg-indigo-600 text-white font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-slate-900">
-                    {kidName}'s Sandbox 🎨
-                  </span>
-                )}
+                JugadJr
               </h1>
-              <p className="text-xs text-slate-500 font-bold">Talk to the AI to build dynamic solutions onto the screen instantly!</p>
+              <p className="text-xs text-slate-500 font-bold">Spot the trouble. Speak your invention. Earn coins. Impress the shark!</p>
             </div>
           </div>
 
@@ -707,16 +673,30 @@ export default function App() {
                   }`}
                 >
                   {prob.id === "muddy-puppies" && "🐶 Muddy Paws"}
-                  {prob.id === "sad-squirrels" && "🐿️ Melted Acorn"}
-                  {prob.id === "lost-toys" && "🌾 Lost Car"}
-                  {prob.id === "thirsty-birds" && "🦜 Thirsty Bird"}
+                  {prob.id === "thirsty-park" && "🍋 Thirsty Park"}
                 </button>
               );
             })}
           </div>
 
-          {/* Controls: Speaker Mute / Reset / Change Name */}
+          {/* Controls: Coins / Speaker Mute / Reset / Change Name */}
           <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-1 border-2 border-slate-900 rounded-xl px-2.5 py-1.5 font-black text-xs transition-all shadow-[2px_2px_0_#1e293b] ${
+              coinFlash === 'earn' ? 'bg-emerald-300 scale-110' : coinFlash === 'spend' ? 'bg-rose-200 scale-110' : 'bg-amber-300'
+            }`}>
+              🪙 <span>{coins}</span>
+            </div>
+
+            <button
+              onClick={() => setHandsFree(!handsFree)}
+              title="Hands-free: mic opens by itself after each question"
+              className={`text-[9px] font-black uppercase border-2 border-slate-900 rounded-xl px-2 py-1.5 shadow-[2px_2px_0_#1e293b] ${
+                handsFree ? 'bg-emerald-200 text-emerald-900' : 'bg-slate-100 text-slate-500'
+              }`}
+            >
+              🎙️ Auto {handsFree ? 'ON' : 'OFF'}
+            </button>
+
             {kidName && (
               <button 
                 onClick={() => {
@@ -729,27 +709,6 @@ export default function App() {
                 Change Name ✏️
               </button>
             )}
-
-            <div className="bg-slate-50 border-2 border-slate-900 rounded-xl px-2 py-1 flex items-center gap-1">
-              <button 
-                onClick={() => { setActiveLang('english'); triggerCompanionVoice("English!"); }}
-                className={`px-1.5 py-0.5 rounded text-[9px] font-black ${activeLang === 'english' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-200'}`}
-              >
-                EN
-              </button>
-              <button 
-                onClick={() => { setActiveLang('urdu'); triggerCompanionVoice("Salam, urdu enabled!"); }}
-                className={`px-1.5 py-0.5 rounded text-[9px] font-black ${activeLang === 'urdu' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-200'}`}
-              >
-                اردو
-              </button>
-              <button 
-                onClick={() => { setActiveLang('german'); triggerCompanionVoice("Hallo!"); }}
-                className={`px-1.5 py-0.5 rounded text-[9px] font-black ${activeLang === 'german' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-200'}`}
-              >
-                DE
-              </button>
-            </div>
 
             <button
               onClick={() => {
@@ -770,47 +729,33 @@ export default function App() {
         </div>
       </header>
 
-      {/* TOPIC EDITOR PANEL */}
-      <section className="max-w-6xl w-full mx-auto px-4 mt-5">
-        <div className="bg-white border-4 border-slate-900 rounded-3xl p-4 shadow-[5px_5px_0_#1e293b] flex flex-col md:flex-row items-center gap-3">
-          <div className="flex-1 w-full">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="bg-indigo-600 text-white font-black text-[9px] uppercase px-2 py-0.5 rounded-md border border-slate-950 animate-pulse">
-                Current Trouble Topic
-              </span>
-              <p className="text-[10px] font-black text-slate-400">✏️ Type any problem you want to solve!</p>
-            </div>
-            <input 
-              type="text"
-              value={problemText}
-              onChange={(e) => setProblemText(e.target.value)}
-              placeholder="e.g., 'A dinosaur is hot and needs cold ice water!'"
-              className="w-full bg-slate-50 border-2 border-slate-900 rounded-2xl px-4 py-2 text-xs font-black text-slate-800 focus:outline-none focus:ring-4 focus:ring-amber-200 transition-all"
-            />
-          </div>
-          <button
-            onClick={() => handleLoadOrGenerateScene(problemText)}
-            disabled={isLoading || !problemText.trim()}
-            className="w-full md:w-auto bg-amber-400 hover:bg-amber-300 disabled:bg-slate-100 border-3 border-slate-900 rounded-2xl px-6 py-2.5 text-xs font-black shadow-[3px_3px_0_#000] active:translate-y-0.5 active:shadow-none transition-all flex items-center justify-center gap-1.5 whitespace-nowrap self-end"
-          >
-            <Sparkles className="w-4 h-4 text-slate-900" /> Draw Custom Trouble!
-          </button>
-        </div>
-      </section>
+      {/* Main Sandbox Layout: one big game screen */}
+      <main className="max-w-6xl w-full mx-auto px-4 mt-5 flex-1">
 
-      {/* Main Sandbox Layout */}
-      <main className="max-w-6xl w-full mx-auto px-4 mt-5 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-stretch">
-        
-        {/* CARTOON CANVAS: Left Area (Large Stage) */}
-        <div className="lg:col-span-8 flex flex-col justify-between bg-gradient-to-b from-sky-300 via-sky-200 to-emerald-200 border-4 border-slate-900 rounded-3xl overflow-hidden relative shadow-[8px_8px_0_#1e293b] min-h-[380px] md:min-h-[460px]">
+        {/* CARTOON CANVAS */}
+        <div
+          className="flex flex-col justify-between border-4 border-slate-900 rounded-3xl overflow-hidden relative shadow-[8px_8px_0_#1e293b] min-h-[420px] md:min-h-[520px]"
+          style={{
+            background: isHotScene
+              ? 'linear-gradient(to bottom, #ffd98a 0%, #ffc76b 55%, #f7b45a 100%)'
+              : 'linear-gradient(to bottom, #8fd6ff 0%, #b8e6ff 60%, #d8f2ff 100%)'
+          }}
+        >
           
-          {/* Backdrops */}
+          {/* Backdrops: rolling ground plane under an open sky */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
             <div className="absolute text-5xl opacity-40 top-8 animate-cloud-slow">☁️</div>
             <div className="absolute text-4xl opacity-30 top-16 animate-cloud-fast">☁️</div>
-            <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-b from-emerald-400 to-emerald-600 border-t-3 border-slate-900/30" />
-            <div className="absolute bottom-12 left-10 text-4xl opacity-15">🌳</div>
-            <div className="absolute bottom-11 right-12 text-4xl opacity-20">🌳</div>
+            {/* Curved horizon: a huge ellipse peeking up from the bottom */}
+            <div
+              className="absolute left-[-25%] right-[-25%] bottom-[-30%] h-[80%]"
+              style={{
+                borderRadius: '50% 50% 0 0 / 28% 28% 0 0',
+                background: isHotScene
+                  ? 'linear-gradient(to bottom, #d9c07a 0%, #c9ab5f 100%)'
+                  : 'linear-gradient(to bottom, #6cc24a 0%, #3f9a2f 100%)'
+              }}
+            />
           </div>
 
           {/* Title Banner */}
@@ -833,16 +778,12 @@ export default function App() {
           {/* PLAY SIMULATOR CONTROLS BAR */}
           <div className="absolute top-16 left-4 z-20">
             <button
-              onClick={runTroubleSimulation}
+              onClick={() => runTroubleSimulation()}
               disabled={isSimulating}
               className="bg-rose-500 hover:bg-rose-400 text-white font-black text-xs px-4 py-2.5 rounded-2xl border-3 border-slate-950 shadow-[3px_3px_0_#000] active:translate-y-0.5 active:shadow-none disabled:bg-slate-300 disabled:shadow-none flex items-center gap-2 animate-bounce hover:animate-none"
             >
               <Play className="w-4 h-4 fill-white" />
-              {activeProblemId === "muddy-puppies" && "🏃‍♂️ Walk the Dog & Get Muddy!"}
-              {activeProblemId === "sad-squirrels" && "☀️ Turn on Blazing Sun!"}
-              {activeProblemId === "lost-toys" && "🌿 Drop Toy in Grass!"}
-              {activeProblemId === "thirsty-birds" && "☀️ Drain Water Basin!"}
-              {!["muddy-puppies", "sad-squirrels", "lost-toys", "thirsty-birds"].includes(activeProblemId) && "🎭 Start Problem Simulation!"}
+              🔁 Replay the trouble!
             </button>
           </div>
 
@@ -867,7 +808,7 @@ export default function App() {
               </div>
             ) : (
               elements.map((el) => {
-                const sizeClass = el.size === 'small' ? 'text-4xl' : el.size === 'large' ? 'text-7xl animate-pulse' : 'text-5xl';
+                const sizeClass = el.size === 'small' ? 'text-4xl' : el.size === 'large' ? 'text-7xl' : 'text-5xl';
                 
                 let animClass = '';
                 if (el.animation === 'bounce') animClass = 'animate-cartoon-bounce';
@@ -876,6 +817,14 @@ export default function App() {
                 else if (el.animation === 'shake') animClass = 'animate-cartoon-shake';
                 else if (el.animation === 'wiggle') animClass = 'animate-cartoon-wiggle';
                 else if (el.animation === 'pulse') animClass = 'animate-cartoon-pulse';
+                else if (el.animation === 'walk') animClass = 'animate-cartoon-walk';
+
+                const isMudPatch = el.label.toLowerCase().includes('mud patch') || el.id === 'mud-1';
+                const isMudSplat = /splat|smudge/i.test(el.label) || el.id.startsWith('splat-');
+                const isStand = /\b(stand|stall|booth|shop|kiosk)\b/i.test(el.label) || /^(stand|stall|shop)/i.test(el.id);
+                const standGoods = el.emoji && el.emoji.trim() ? el.emoji.trim() : '🥤';
+                // Dog and walker emojis are drawn facing left; flip them to face the way they travel
+                const facesLeftByDefault = el.id === 'dog-1' || /🐕|🐩|🚶/.test(el.emoji);
 
                 return (
                   <div
@@ -897,10 +846,62 @@ export default function App() {
                       </div>
                     )}
 
-                    {/* Emoji */}
-                    <div className={`${sizeClass} ${animClass} filter drop-shadow-md hover:scale-125 active:scale-135 transition-transform duration-150`}>
-                      {el.emoji}
-                    </div>
+                    {/* Drawn props get real geometry; everything else stays an emoji actor */}
+                    {isMudSplat ? (
+                      <div
+                        className="rounded-[50%]"
+                        style={{
+                          width: '30px', height: '13px',
+                          background: 'radial-gradient(ellipse at 50% 40%, #8b5e34 0%, #63421f 100%)',
+                          opacity: 0.85
+                        }}
+                      />
+                    ) : isMudPatch ? (
+                      <div
+                        className="rounded-[50%] border-2 border-amber-950/40"
+                        style={{
+                          width: '110px', height: '38px',
+                          background: 'radial-gradient(ellipse at 50% 35%, #8b5e34 0%, #5c3d21 100%)'
+                        }}
+                      />
+                    ) : isStand ? (
+                      <div className="relative" style={{ width: '150px' }}>
+                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-amber-300 border-3 border-slate-900 rounded-xl px-3 py-1 text-[11px] font-black text-amber-950 whitespace-nowrap shadow-[2px_2px_0_#0f172a]">
+                          {el.label}
+                        </div>
+                        <div className="h-4 rounded-t-md border-3 border-slate-900" style={{
+                          background: 'repeating-linear-gradient(90deg, #ef4444 0 14px, #ffffff 14px 28px)'
+                        }} />
+                        <div className="flex justify-between px-1">
+                          <div className="w-1.5 h-10 bg-amber-800 border-x-2 border-slate-900" />
+                          <div className="w-1.5 h-10 bg-amber-800 border-x-2 border-slate-900" />
+                        </div>
+                        <div className="h-11 -mt-1 rounded-md border-3 border-slate-900 flex items-center justify-around text-2xl" style={{
+                          background: 'linear-gradient(to bottom, #b4763c 0%, #8b5a2b 100%)'
+                        }}>
+                          <span>{standGoods}</span><span>{standGoods}</span><span>{standGoods}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`${sizeClass} ${animClass} filter drop-shadow-md hover:scale-125 active:scale-135 transition-transform duration-150`}>
+                        {facesLeftByDefault ? (
+                          <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>{el.emoji}</span>
+                        ) : el.emoji}
+                      </div>
+                    )}
+
+                    {/* Ground shadow: anchors characters and items to the world */}
+                    {el.type !== 'scenery' && el.type !== 'effect' && !isMudPatch && (
+                      <div
+                        className="absolute left-1/2 -translate-x-1/2 rounded-[50%] bg-slate-900/20"
+                        style={{
+                          bottom: '-6px',
+                          width: el.size === 'large' ? '56px' : el.size === 'medium' ? '38px' : '24px',
+                          height: el.size === 'large' ? '12px' : '8px',
+                          filter: 'blur(2px)'
+                        }}
+                      />
+                    )}
 
                     {/* Label */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-slate-900/80 text-white text-[9px] font-black uppercase tracking-wider py-0.5 px-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap">
@@ -912,209 +913,159 @@ export default function App() {
             )}
           </div>
 
-          {/* Clean Overlay Banner */}
-          <div className="bg-indigo-950 border-t-4 border-slate-900 px-4 py-3 z-10 flex gap-2.5 items-center justify-between">
-            <div className="flex gap-2 items-center">
-              <span className="bg-amber-400 text-slate-900 font-black text-[9px] uppercase px-1.5 py-0.5 rounded">
-                Today's Trouble
-              </span>
-              <p className="text-xs text-white font-extrabold leading-tight">
-                "{problemText}"
-              </p>
-            </div>
-            <p className="text-[10px] text-amber-300 font-black uppercase tracking-wider hidden sm:block">
-              👉 Click on characters on the canvas to wiggle them!
-            </p>
-          </div>
-
-        </div>
-
-        {/* COMPANION & RUNTIME INTERACTION: Right Area */}
-        <div className="lg:col-span-4 flex flex-col justify-between gap-5">
-          
-          {/* Companion Card */}
-          <div className="bg-white border-4 border-slate-900 rounded-3xl p-5 shadow-[6px_6px_0_#1e293b] flex flex-col justify-between flex-1 space-y-4">
-            
-            {/* Guide Switcher */}
-            <div className="flex justify-between items-center border-b-2 border-dashed border-slate-100 pb-2">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                My Cartoon Companion
-              </span>
-              <div className="flex gap-1.5">
-                {COMPANIONS.map((c) => {
-                  const isSelected = companion === c.id;
-                  return (
-                    <button
-                      key={c.id}
-                      onClick={() => handleSwitchCompanion(c.id)}
-                      title={`Switch to ${c.name}`}
-                      className={`w-7 h-7 rounded-xl text-xs flex items-center justify-center border-2 transition-all ${
-                        isSelected 
-                          ? 'bg-amber-400 border-slate-900 scale-110 shadow-[1px_1px_0_#000]' 
-                          : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
-                      }`}
-                    >
-                      {c.emoji}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Talk Area */}
-            <div className="flex-1 flex flex-col items-center justify-center py-2 space-y-3">
-              
+          {/* TALK BAR: companion + speech + mic, all inside the game */}
+          <div className="bg-indigo-950 border-t-4 border-slate-900 px-4 py-3 z-10 space-y-2">
+            <div className="flex items-center gap-3">
               <div className="shrink-0">
-                <CompanionAvatar id={companion} size={100} isTalking={isCompanionTalking} />
+                <CompanionAvatar id={companion} size={64} isTalking={isCompanionTalking} />
               </div>
 
-              {/* Speech bubble */}
-              <div className="w-full relative bg-amber-50 border-3 border-slate-900 rounded-2xl p-4 shadow-[3px_3px_0_#1e293b]">
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-b-8 border-b-slate-900" />
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mt-1 w-0 h-0 border-x-8 border-x-transparent border-b-8 border-b-amber-50" />
-                
-                <p className="text-xs sm:text-sm font-black text-amber-950 text-center leading-relaxed italic">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm text-white font-extrabold leading-snug">
                   "{speechText}"
                 </p>
-                
-                {/* Challenge prompt */}
-                <div className="mt-2.5 pt-2 border-t border-amber-900/10 text-center">
-                  <p className="text-[9px] uppercase font-black text-amber-700 tracking-wider">
-                    Next Challenge:
-                  </p>
-                  <p className="text-xs font-black text-indigo-700">
-                    {questionText}
-                  </p>
-                </div>
+                <p className="text-[11px] text-amber-300 font-black mt-1">
+                  👉 {questionText}
+                </p>
+                {errorMsg && (
+                  <p className="text-[10px] text-rose-300 font-bold mt-1">{errorMsg}</p>
+                )}
               </div>
 
-            </div>
-
-            <div className="flex justify-center">
-              <button 
+              <button
                 onClick={() => triggerCompanionVoice(speechText)}
-                className="flex items-center gap-1.5 text-[9px] font-black text-slate-500 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 py-1 px-3 rounded-full transition"
+                title="Say it again"
+                className="shrink-0 p-2 bg-indigo-900 hover:bg-indigo-800 text-indigo-200 rounded-xl border-2 border-indigo-800 transition"
               >
-                <Volume2 className="w-3 h-3" /> Say it again!
+                <Volume2 className="w-4 h-4" />
               </button>
-            </div>
 
-          </div>
-
-          {/* RUNTIME TALK CONTROLLER */}
-          <div className="bg-white border-4 border-slate-900 rounded-3xl p-4 shadow-[6px_6px_0_#1e293b] space-y-3">
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
-              🎙️ Speak or type below to build anything!
-            </h4>
-
-            {errorMsg && (
-              <p className="text-[10px] text-rose-600 font-extrabold bg-rose-50 p-2 rounded-xl border border-rose-200 text-center">
-                {errorMsg}
-              </p>
-            )}
-
-            <div className="flex gap-2">
-              {/* Animated Microphone button */}
               <button
                 onClick={toggleSpeechRecognition}
-                title="Speak your solution"
-                className={`w-12 h-12 rounded-2xl border-3 flex items-center justify-center transition-all shadow-[2.5px_2.5px_0_#1e293b] active:translate-y-0.5 active:shadow-none ${
-                  isRecording 
-                    ? 'bg-rose-500 text-white border-slate-950 animate-pulse scale-105' 
-                    : 'bg-indigo-50 text-indigo-700 border-slate-950 hover:bg-indigo-100'
+                title="Hold your idea - talk!"
+                className={`shrink-0 w-16 h-16 rounded-full border-4 flex items-center justify-center transition-all shadow-[3px_3px_0_#000] active:translate-y-0.5 active:shadow-none ${
+                  isRecording
+                    ? 'bg-rose-500 text-white border-rose-200 animate-pulse scale-110'
+                    : 'bg-amber-400 text-slate-900 border-slate-950 hover:bg-amber-300'
                 }`}
               >
-                {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5 animate-pulse text-indigo-600" />}
-              </button>
-
-              <input
-                type="text"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSendMessage();
-                }}
-                disabled={isLoading}
-                placeholder="e.g., 'let's clean them!', 'use a bubble sponge!'"
-                className="flex-1 px-3 py-1.5 rounded-2xl border-3 border-slate-900 bg-slate-50 text-xs font-black focus:outline-none focus:ring-3 focus:ring-sky-200"
-              />
-
-              <button
-                onClick={() => handleSendMessage()}
-                disabled={!messageInput.trim() || isLoading}
-                className="w-12 h-12 bg-amber-400 hover:bg-amber-300 border-3 border-slate-900 rounded-2xl flex items-center justify-center text-slate-900 shadow-[2.5px_2.5px_0_#1e293b] active:translate-y-0.5 active:shadow-none disabled:bg-slate-100 disabled:border-slate-300 disabled:text-slate-400 disabled:shadow-none transition-all"
-              >
-                <Send className="w-4 h-4 stroke-[3px]" />
+                {isRecording ? <MicOff className="w-7 h-7" /> : <Mic className="w-7 h-7" />}
               </button>
             </div>
 
             {isRecording && (
               <div className="flex items-center justify-center gap-1 py-1">
-                <span className="w-1.5 h-1.5 bg-red-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-1.5 h-1.5 bg-red-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-1.5 h-1.5 bg-red-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                <p className="text-[10px] text-red-600 font-black ml-1.5">
-                  Listening... Tell me what we should build or clean!
+                <span className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <p className="text-[11px] text-rose-300 font-black ml-1.5">
+                  Listening... tell me your idea!
                 </p>
               </div>
             )}
-          </div>
 
-          {/* MINIMAL STORY BOOK LOG */}
-          <div className="bg-amber-50/60 border-3 border-slate-900 rounded-2xl shadow-[4px_4px_0_#1e293b] overflow-hidden">
-            <button
-              onClick={() => setShowStoryBook(!showStoryBook)}
-              className="w-full py-2 px-3 bg-amber-100 hover:bg-amber-200 border-b-2 border-slate-900 text-[11px] font-black text-amber-950 flex justify-between items-center transition"
-            >
-              <span className="flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-amber-800" />
-                📖 Show Story Words & Log
-              </span>
-              <span className="text-[9px] bg-amber-200 px-2 py-0.5 rounded border border-amber-300">
-                {showStoryBook ? "Hide" : "Show"}
-              </span>
-            </button>
-
-            {showStoryBook && (
-              <div className="p-3 space-y-2.5 max-h-[200px] overflow-y-auto bg-amber-50/40 text-xs">
-                <div className="p-2.5 bg-white border border-amber-900/15 rounded-xl space-y-1">
-                  <p className="text-[9px] uppercase font-black text-amber-600 tracking-wider">
-                    Our Story Book So Far:
-                  </p>
-                  <p className="font-bold text-amber-950 leading-relaxed italic">
-                    {narrativeSummary}
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <p className="text-[9px] uppercase font-black text-slate-400 tracking-wider">
-                    Creative Ideas Track:
-                  </p>
-                  <div className="space-y-1.5 text-[10px] font-semibold">
-                    {history.map((h, i) => (
-                      <div 
-                        key={i} 
-                        className={`p-1.5 rounded-lg border ${
-                          h.role === 'user' 
-                            ? 'bg-sky-50 border-sky-100 text-sky-900' 
-                            : 'bg-amber-50 border-amber-100 text-amber-900'
-                        }`}
-                      >
-                        <span className="font-black text-[8px] block uppercase opacity-65">
-                          {h.role === 'user' ? '👧 Kid Boss' : '🐕 Companion'}
-                        </span>
-                        {h.message}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            {!isRecording && messageInput && (
+              <p className="text-[11px] text-sky-300 font-bold text-center py-1">
+                🗣️ You said: "{messageInput}"
+              </p>
             )}
           </div>
 
         </div>
 
+        {/* STORY SO FAR: growing conversation log */}
+        {history.length > 0 && (
+          <div className="mt-4 bg-white border-4 border-slate-900 rounded-3xl shadow-[5px_5px_0_#1e293b] overflow-hidden">
+            <div className="bg-amber-100 border-b-2 border-slate-900 px-4 py-2 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-amber-800" />
+              <span className="text-[11px] font-black text-amber-950 uppercase tracking-wider">Our story so far</span>
+              <span className="ml-auto text-[10px] font-black text-amber-700 bg-amber-200 px-2 py-0.5 rounded-full border border-amber-300">
+                {history.length} turns
+              </span>
+            </div>
+            <div ref={historyRef} className="max-h-[220px] overflow-y-auto p-3 space-y-2 bg-amber-50/40">
+              {history.map((h, i) => (
+                <div
+                  key={i}
+                  className={`flex ${h.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-[80%] px-3 py-1.5 rounded-2xl border-2 text-xs font-bold leading-relaxed ${
+                    h.role === 'user'
+                      ? 'bg-sky-100 border-sky-300 text-sky-900 rounded-br-sm'
+                      : 'bg-white border-slate-200 text-slate-700 rounded-bl-sm'
+                  }`}>
+                    <span className="block text-[9px] uppercase font-black opacity-60 mb-0.5">
+                      {h.role === 'user' ? `🗣️ ${kidName || 'You'}` : '🐕 Buddy'}
+                    </span>
+                    {h.message}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </main>
+
+      {/* SHARK SANA INVESTOR REVIEW */}
+      {sharkOpen && (
+        <div className="fixed inset-0 bg-indigo-950/80 backdrop-blur-md z-[90] flex items-center justify-center p-4">
+          <div className="bg-white border-4 border-slate-950 p-6 rounded-3xl shadow-[8px_8px_0_#1e293b] max-w-md w-full text-center space-y-4 animate-cartoon-bounce">
+            <div className="text-6xl">🦈</div>
+            <h3 className="text-xl font-black text-slate-900">Shark Sana's Verdict</h3>
+
+            {sharkLoading && (
+              <p className="text-xs font-bold text-slate-500 animate-pulse py-4">
+                Shark Sana is swimming over to review your invention... 🌊
+              </p>
+            )}
+
+            {sharkData && (
+              <>
+                <p className="text-xs font-bold text-slate-700 bg-sky-50 border-2 border-slate-900 rounded-2xl p-3 italic leading-relaxed">
+                  "{sharkData.speech}"
+                </p>
+
+                <div className="space-y-2 text-left">
+                  {[
+                    { label: '🎨 Creativity', val: sharkData.creativity },
+                    { label: '🧠 Business brain', val: sharkData.business_brain },
+                    { label: '🔢 Math sense', val: sharkData.math_sense }
+                  ].map((row) => (
+                    <div key={row.label} className="flex items-center gap-2">
+                      <span className="text-[10px] font-black text-slate-600 w-28 shrink-0">{row.label}</span>
+                      <div className="flex-1 h-3 bg-slate-100 border-2 border-slate-900 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-1000 ${row.val >= 7 ? 'bg-emerald-400' : 'bg-amber-400'}`}
+                          style={{ width: `${row.val * 10}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-black w-6">{row.val}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={`border-3 border-slate-950 rounded-2xl p-3 font-black text-sm ${
+                  sharkData.invested ? 'bg-emerald-200 text-emerald-950' : 'bg-amber-100 text-amber-900'
+                }`}>
+                  {sharkData.invested ? '🎉 INVESTED! +20 coins for you, founder!' : '🤝 Not yet — but come back tomorrow!'}
+                </div>
+
+                <p className="text-[10px] font-bold text-slate-500">
+                  💡 Shark tip: {sharkData.tip}
+                </p>
+              </>
+            )}
+
+            <button
+              onClick={() => setSharkOpen(false)}
+              className="w-full bg-amber-400 hover:bg-amber-300 border-3 border-slate-950 rounded-2xl py-2.5 text-xs font-black shadow-[4px_4px_0_#000] active:translate-y-0.5 active:shadow-none transition-all"
+            >
+              Keep inventing! 🚀
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );
