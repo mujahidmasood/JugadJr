@@ -76,11 +76,36 @@ const MODEL_CHAIN = [
   "gemini-2.0-flash-lite",
 ];
 
-async function generateWithFallback(config: { contents: any; config: any }) {
+// Which model actually answered, most recently. When the top of the chain is
+// quota-dead every reply silently comes from a weaker model, and the app looks
+// completely healthy while giving noticeably worse answers to children. That is
+// exactly what happened during the first play-test, so it is now visible.
+const modelHealth = {
+  lastServedBy: null as string | null,
+  degradedSince: null as string | null,
+  fallbackCount: 0,
+};
+
+async function generateWithFallback(
+  config: { contents: any; config: any }
+): Promise<{ response: any; servedBy: string }> {
   let lastErr: any = null;
-  for (const model of MODEL_CHAIN) {
+
+  for (let i = 0; i < MODEL_CHAIN.length; i++) {
+    const model = MODEL_CHAIN[i];
     try {
-      return await ai.models.generateContent({ model, ...config });
+      const response = await ai.models.generateContent({ model, ...config });
+
+      modelHealth.lastServedBy = model;
+      if (i > 0) {
+        modelHealth.fallbackCount++;
+        if (!modelHealth.degradedSince) modelHealth.degradedSince = new Date().toISOString();
+        // Loud, because degraded answers to a child are the failure we cannot see.
+        console.warn(`DEGRADED: served by ${model} (position ${i + 1}/${MODEL_CHAIN.length}). Preferred model unavailable.`);
+      } else {
+        modelHealth.degradedSince = null;
+      }
+      return { response, servedBy: model };
     } catch (err: any) {
       lastErr = err;
       const msg = String(err);
@@ -98,6 +123,20 @@ async function generateWithFallback(config: { contents: any; config: any }) {
 // young voices and accents) or the built-in Web Speech API.
 app.get("/api/capabilities", (_req, res) => {
   res.json({ geminiVoice: Boolean(process.env.GEMINI_API_KEY) });
+});
+
+// Which model is actually answering right now. Check this before a demo: if
+// `degraded` is true the preferred models are quota-dead and children are being
+// answered by a weaker one, which looks identical to healthy operation from outside.
+app.get("/api/health", (_req, res) => {
+  const preferred = MODEL_CHAIN[0];
+  res.json({
+    preferredModel: preferred,
+    lastServedBy: modelHealth.lastServedBy,
+    degraded: Boolean(modelHealth.lastServedBy && modelHealth.lastServedBy !== preferred),
+    degradedSince: modelHealth.degradedSince,
+    fallbackCount: modelHealth.fallbackCount,
+  });
 });
 
 // Asked to transcribe silence, the model does not return [UNCLEAR] - it confidently
@@ -158,7 +197,7 @@ app.post("/api/transcribe", async (req, res) => {
   }
 
   try {
-    const response = await generateWithFallback({
+    const { response, servedBy } = await generateWithFallback({
       contents: [
         {
           role: "user",
@@ -425,7 +464,7 @@ Create an exciting, interactive cartoon translation! Make sure you use guiding c
     const prompt = `Translate this kid's input into the updated cartoon world state!
 Latest input: "${message}"`;
 
-    const response = await generateWithFallback({
+    const { response, servedBy } = await generateWithFallback({
       contents: prompt,
       config: {
         systemInstruction,
@@ -471,7 +510,9 @@ Latest input: "${message}"`;
     }
 
     const data = JSON.parse(text);
-    res.json(data);
+    // servedBy lets the client (and a demo operator) see when answers are coming
+    // from a weaker fallback model instead of the preferred one.
+    res.json({ ...data, servedBy });
   } catch (error: any) {
     console.error("Error in /api/interact:", error);
     // Return a safe fallback response if Gemini fails so the kid doesn't see an error screen
@@ -507,7 +548,7 @@ Today's trouble: "${problem}"
 Kid's current coins: ${coins}
 Conversation: ${JSON.stringify(history || [])}`;
 
-    const response = await generateWithFallback({
+    const { response, servedBy } = await generateWithFallback({
       contents: "Review the kid's invention and give your shark verdict!",
       config: {
         systemInstruction,
@@ -529,7 +570,7 @@ Conversation: ${JSON.stringify(history || [])}`;
 
     const text = response.text;
     if (!text) throw new Error("No response from Gemini.");
-    res.json(JSON.parse(text));
+    res.json({ ...JSON.parse(text), servedBy });
   } catch (error: any) {
     console.error("Error in /api/shark:", error);
     res.json({
