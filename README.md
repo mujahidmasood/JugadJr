@@ -51,7 +51,7 @@ Helping for free is scored as a win. The game never pushes money.
 
 Gemini runs three jobs, all through structured JSON output:
 
-**1. Scene director** (`/api/interact`) — turns a spoken idea into a full array of positioned emoji elements with animations and speech bubbles, plus the companion's line, coin costs, coins earned, and a `solved` flag. The response schema is enforced, so the game never parses prose.
+**1. Scene director** (`/api/interact`) — turns a spoken idea into a full array of positioned scene elements with animations and speech bubbles, plus the companion's line, coin costs, coins earned, and a `solved` flag. The response schema is enforced, so the game never parses prose.
 
 **2. Ears** (`/api/transcribe`) — speech-to-text tuned for the actual users. The browser's built-in recogniser is Chrome-only and mishears young children and non-US accents constantly. Gemini is prompted to transcribe *without* correcting grammar or completing sentences, so a five-year-old's real words reach the game. Audio is captured with `MediaRecorder`, re-encoded in-browser to 16 kHz mono WAV, and posted as base64.
 
@@ -73,14 +73,33 @@ Nothing in this app is allowed to show a child an error.
 
 ---
 
+## How it looks
+
+**Characters are drawn, props are emoji.** The scene used to render every character as a system emoji. That had two problems: the art changed with the operating system — a judge on Windows saw entirely different characters than a judge on a Mac — and it clashed with the hand-drawn SVG companion sitting right underneath it in the talk bar.
+
+Story-carrying characters (dog, child, bird, teddy) are now drawn in the companion's house style: thick outlines, flat fills, one highlight per eye. Incidental props stay emoji, which is fine — a flower carries no character.
+
+Actors pick their mood from their own label and speech bubble, so the dog visibly droops and picks up mud splatters when muddy, then sparkles once the child's invention cleans him. No extra model call is involved.
+
+**Animation follows the story, not a metronome.**
+
+- New elements drop in with overshoot and settle, staggered across a batch. The child's idea appearing in the world is the most important moment in the game, and it used to just blink into existence.
+- Bounce carries squash-and-stretch, so characters read as having weight.
+- Scenery only breathes. Every tree and flower wiggling at full amplitude left the eye with nowhere to land; the characters should be what moves.
+- Elements scale by ground position and stack by depth, so the world is no longer perfectly flat.
+
+---
+
 ## Stack
 
 React 19 + Vite + Tailwind 4 on the front, Express + `@google/genai` on the back, containerised and deployed to Google Cloud Run. No database — progress and coins live in `localStorage`.
 
 ```
-server.ts                  API, curated troubles, prompt logic, rate limiting
-src/App.tsx                game loop, canvas, voice capture, WAV encoding
-src/components/            companion avatars, inspiration presets
+server.ts                          API, curated troubles, prompt logic, silence gate, rate limiting
+src/App.tsx                        game loop, canvas, voice capture, WAV encoding
+src/index.css                      cartoon animation keyframes
+src/components/SceneActors.tsx     drawn characters, actor/mood resolution
+src/components/CompanionAvatars.tsx  the four companions
 ```
 
 ## Run locally
@@ -100,7 +119,7 @@ npm run lint                 # tsc --noEmit
 
 ## Adding a trouble
 
-Append an entry to `CURATED_PROBLEMS` in both `server.ts` and `src/App.tsx`. Anything without a bespoke animation gets a generic "it gets worse, then we ask" opening beat automatically — new troubles are data, not code.
+Append an entry to `CURATED_PROBLEMS` in both `server.ts` and `src/App.tsx`. Anything without a bespoke animation gets a generic "it gets worse, then we ask" opening beat automatically, and any character in it is picked up by `resolveActor` and drawn without extra wiring — new troubles are data, not code.
 
 ---
 
