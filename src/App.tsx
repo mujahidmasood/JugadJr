@@ -241,6 +241,9 @@ export default function App() {
   
   // Input fields
   const [messageInput, setMessageInput] = useState<string>("");
+  // Typed answers, kept separate from messageInput so the "You said" echo of a
+  // spoken answer is not overwritten while the child is typing the next one.
+  const [typedIdea, setTypedIdea] = useState<string>("");
   const [history, setHistory] = useState<ChatHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -1500,6 +1503,36 @@ export default function App() {
                 🗣️ You said: "{messageInput}"
               </p>
             )}
+
+            {/* Typed answers. The game was voice-only, so a denied or unsupported
+                microphone made it unplayable - there was no way to answer at all.
+                Speaking stays the primary path; this is the floor under it. */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const text = typedIdea.trim();
+                if (!text || isLoading) return;
+                setTypedIdea("");
+                handleSendMessage(text);
+              }}
+              className="flex items-center gap-2"
+            >
+              <input
+                value={typedIdea}
+                onChange={(e) => setTypedIdea(e.target.value)}
+                disabled={isLoading}
+                placeholder="…or type your idea here"
+                className="flex-1 min-w-0 text-xs font-bold bg-indigo-900/60 text-white placeholder:text-indigo-300 border-2 border-indigo-700 focus:border-amber-400 rounded-xl px-3 py-2 outline-none disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                disabled={!typedIdea.trim() || isLoading}
+                title="Send my idea"
+                className="shrink-0 flex items-center gap-1 bg-amber-400 hover:bg-amber-300 disabled:bg-indigo-800 disabled:text-indigo-400 text-slate-900 font-black text-xs border-2 border-slate-950 rounded-xl px-3 py-2 shadow-[2px_2px_0_#000] active:translate-y-0.5 active:shadow-none"
+              >
+                <Send className="w-3.5 h-3.5" /> Send
+              </button>
+            </form>
           </div>
 
         </div>
