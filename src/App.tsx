@@ -245,6 +245,10 @@ export default function App() {
   // Typed answers, kept separate from messageInput so the "You said" echo of a
   // spoken answer is not overwritten while the child is typing the next one.
   const [typedIdea, setTypedIdea] = useState<string>("");
+  // Once a child starts typing, stop opening the mic for them after every question -
+  // a mic that grabs the turn while they are mid-sentence is worse than no mic.
+  // Tapping the mic puts them back in voice mode.
+  const [prefersTyping, setPrefersTyping] = useState<boolean>(false);
   const [history, setHistory] = useState<ChatHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -460,7 +464,7 @@ export default function App() {
 
   // Companion finished asking a question: open the mic automatically (hands-free flow)
   const autoListenAfterQuestion = () => {
-    if (!handsFree || isMuted || sharkOpen) return;
+    if (!handsFree || isMuted || sharkOpen || prefersTyping) return;
     setTimeout(() => startListening(true), 250);
   };
 
@@ -996,6 +1000,7 @@ export default function App() {
   // Mic button tap: stop if listening, otherwise start
   const toggleSpeechRecognition = () => {
     if (isTranscribing) return;
+    setPrefersTyping(false);
 
     if (isRecording) {
       // Tapping stop should still submit what they already said, so let the
@@ -1291,15 +1296,17 @@ export default function App() {
 
           {/* DYNAMIC CANVAS OBJECTS */}
           <div className="flex-1 relative p-4">
+            {/* Quiet "thinking" cue. This used to be a full-screen modal that covered
+                the whole world on every single turn, hiding the very thing the child
+                had just changed. A small badge says the same thing without blocking. */}
             {isLoading && (
-              <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs z-30 flex flex-col items-center justify-center text-center p-4">
-                <div className="bg-white border-3 border-slate-900 p-6 rounded-2xl shadow-[4px_4px_0_#000] max-w-xs space-y-3">
-                  <div className="text-4xl animate-bounce">🎨🪄</div>
-                  <h4 className="font-black text-sm text-slate-900">AI is drawing your cartoon...</h4>
-                  <p className="text-[10px] text-slate-500 font-bold leading-relaxed">
-                    Drawing the requested solution onto the canvas instantly!
-                  </p>
-                </div>
+              <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-white/95 border-2 border-slate-900 rounded-full pl-2 pr-3 py-1 shadow-[2px_2px_0_#0f172a]">
+                <span className="flex gap-0.5">
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </span>
+                <span className="text-[10px] font-black text-slate-800">Drawing…</span>
               </div>
             )}
 
@@ -1525,7 +1532,13 @@ export default function App() {
             >
               <input
                 value={typedIdea}
-                onChange={(e) => setTypedIdea(e.target.value)}
+                onFocus={() => {
+                  setPrefersTyping(true);
+                  // A mic already listening would otherwise capture the room while they type.
+                  if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.stop();
+                  else if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
+                }}
+                onChange={(e) => { setPrefersTyping(true); setTypedIdea(e.target.value); }}
                 disabled={isLoading}
                 placeholder="…or type your idea here"
                 className="flex-1 min-w-0 text-xs font-bold bg-indigo-900/60 text-white placeholder:text-indigo-300 border-2 border-indigo-700 focus:border-amber-400 rounded-xl px-3 py-2 outline-none disabled:opacity-50"
