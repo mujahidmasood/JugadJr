@@ -9,7 +9,52 @@ dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-app.use(express.json());
+// Voice clips arrive as base64 in the JSON body, so the default 100kb cap is too small.
+app.use(express.json({ limit: "12mb" }));
+
+// The API keys sit behind these routes and the free-tier quota is shared by every
+// visitor, so cap how fast a single IP can burn it. In-memory is fine for a single
+// Cloud Run instance; move to Redis if this ever scales horizontally.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+// Keys are relative to the /api mount point below, where req.path is "/shark", not "/api/shark".
+const RATE_LIMITS: Record<string, number> = {
+  "/interact": 20,
+  "/transcribe": 30,
+  "/shark": 6,
+};
+const rateBuckets = new Map<string, { count: number; resetAt: number }>();
+
+app.use("/api", (req, res, next) => {
+  const limit = RATE_LIMITS[req.path];
+  if (!limit) return next();
+
+  const ip = (req.headers["x-forwarded-for"] as string || "").split(",")[0].trim() || req.ip || "unknown";
+  const key = `${ip}:${req.path}`;
+  const now = Date.now();
+  const bucket = rateBuckets.get(key);
+
+  if (!bucket || now > bucket.resetAt) {
+    rateBuckets.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return next();
+  }
+
+  if (bucket.count >= limit) {
+    const retryAfter = Math.ceil((bucket.resetAt - now) / 1000);
+    res.set("Retry-After", String(retryAfter));
+    return res.status(429).json({ error: "Too many ideas at once! Take a breath and try again.", retryAfter });
+  }
+
+  bucket.count++;
+  next();
+});
+
+// Drop expired buckets so the map cannot grow without bound.
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, bucket] of rateBuckets) {
+    if (now > bucket.resetAt) rateBuckets.delete(key);
+  }
+}, RATE_LIMIT_WINDOW_MS).unref();
 
 // Initialize Gemini
 const ai = new GoogleGenAI({
@@ -31,7 +76,7 @@ const MODEL_CHAIN = [
   "gemini-2.0-flash-lite",
 ];
 
-async function generateWithFallback(config: { contents: string; config: any }) {
+async function generateWithFallback(config: { contents: any; config: any }) {
   let lastErr: any = null;
   for (const model of MODEL_CHAIN) {
     try {
@@ -48,6 +93,112 @@ async function generateWithFallback(config: { contents: string; config: any }) {
   }
   throw lastErr;
 }
+
+// The browser asks this on boot to decide which ear to use: Gemini (better with
+// young voices and accents) or the built-in Web Speech API.
+app.get("/api/capabilities", (_req, res) => {
+  res.json({ geminiVoice: Boolean(process.env.GEMINI_API_KEY) });
+});
+
+// Asked to transcribe silence, the model does not return [UNCLEAR] - it confidently
+// invents a plausible child's answer ("I want to play."), which would credit the kid
+// with an idea they never had. No prompt reliably suppresses this, so silence is
+// rejected arithmetically before it ever reaches the model. The client gates on mic
+// loudness too; this is the backstop that does not depend on a trusted client.
+// Measured on 16kHz mono clips: digital silence scores 0, a shy child recorded at 8%
+// of full scale scores ~0.014, normal speech ~0.18. 0.005 sits well clear of both edges.
+// We score the LOUDEST 100ms window rather than the whole clip, because averaging over
+// the whole clip would reject a short "a towel!" surrounded by dead air.
+const SPEECH_RMS_THRESHOLD = 0.005;
+const WAV_HEADER_BYTES = 44;
+
+function isAudibleWav(base64: string): boolean {
+  try {
+    const buf = Buffer.from(base64, "base64");
+    // Client always sends 16-bit mono PCM WAV: 44-byte header, then samples.
+    const sampleCount = Math.floor((buf.length - WAV_HEADER_BYTES) / 2);
+    if (sampleCount <= 0) return false;
+
+    const windowSamples = 1600;          // 100ms at 16kHz
+    const step = windowSamples / 2;      // 50% overlap so speech cannot straddle a boundary
+    let loudest = 0;
+
+    for (let start = 0; start < sampleCount; start += step) {
+      const end = Math.min(start + windowSamples, sampleCount);
+      let sum = 0;
+      for (let i = start; i < end; i++) {
+        const sample = buf.readInt16LE(WAV_HEADER_BYTES + i * 2) / 0x8000;
+        sum += sample * sample;
+      }
+      const rms = Math.sqrt(sum / (end - start));
+      if (rms > loudest) loudest = rms;
+      if (loudest > SPEECH_RMS_THRESHOLD) return true;  // heard enough
+    }
+    return false;
+  } catch {
+    // Unparseable audio: let it through and let the model decide.
+    return true;
+  }
+}
+
+// Gemini-powered speech-to-text. Web Speech is a hard floor for our actual users -
+// it is Chrome-only and mishears 5-to-11-year-olds constantly - so we transcribe
+// with Gemini when we can and let the client fall back when we cannot.
+app.post("/api/transcribe", async (req, res) => {
+  const { audio, mimeType } = req.body;
+
+  if (!audio || typeof audio !== "string") {
+    return res.status(400).json({ ok: false, error: "No audio provided." });
+  }
+  if (!process.env.GEMINI_API_KEY) {
+    return res.status(503).json({ ok: false, error: "Gemini voice unavailable." });
+  }
+  if ((mimeType || "audio/wav") === "audio/wav" && !isAudibleWav(audio)) {
+    return res.json({ ok: false, error: "unclear" });
+  }
+
+  try {
+    const response = await generateWithFallback({
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { inlineData: { mimeType: mimeType || "audio/webm", data: audio } },
+            { text: "Transcribe exactly what the child says." }
+          ]
+        }
+      ],
+      config: {
+        // Deliberately NOT told what the game is about. Describing the scenario here
+        // primes the model to invent a plausible kid's answer when it hears silence,
+        // which would put words in the child's mouth and wreck the whole premise.
+        systemInstruction: `You are a speech-to-text transcription engine. Nothing else.
+
+Output a verbatim transcript of speech that is actually audible in the audio.
+
+RULES:
+- Never guess, infer, complete, or invent words. Transcribe only what you actually hear.
+- Do not correct grammar, word choice, or pronunciation. Speakers may be young children with unusual phrasing; keep their exact words.
+- Never add context, explanation, punctuation-based interpretation, quotes, or labels.
+- If the audio contains no intelligible human speech - silence, breathing, background noise, music, or a single unclear syllable - you MUST output exactly: [UNCLEAR]
+- Outputting invented speech for silent audio is the worst possible failure. When in doubt, output [UNCLEAR].
+
+Output only the transcript, or [UNCLEAR].`,
+        temperature: 0,
+      }
+    });
+
+    const text = (response.text || "").trim();
+    if (!text || text === "[UNCLEAR]") {
+      return res.json({ ok: false, error: "unclear" });
+    }
+    res.json({ ok: true, text });
+  } catch (error: any) {
+    console.error("Error in /api/transcribe:", error);
+    // Signal the client to retry this turn on Web Speech instead of failing the kid.
+    res.status(502).json({ ok: false, error: "transcription_failed" });
+  }
+});
 
 // Curated pool of highly relatable, exciting daily problems for kids
 export const CURATED_PROBLEMS = [
@@ -81,6 +232,66 @@ export const CURATED_PROBLEMS = [
       { id: "girl-1", type: "character", emoji: "🚶‍♀️", label: "Park Friend", animation: "none", x: 60, y: 60, size: "medium", bubbleText: "Hot day!" },
       { id: "bench-1", type: "scenery", emoji: "🪵", label: "Park Bench", animation: "none", x: 75, y: 65, size: "medium" },
       { id: "flower-1", type: "scenery", emoji: "🌸", label: "Blossom", animation: "wiggle", x: 25, y: 74, size: "small" }
+    ]
+  },
+  {
+    id: "melting-icecream",
+    title: "Melting Ice Cream 🍦",
+    problem: "Ice cream melts and drips all over your hands before you can finish it, and the sticky mess ruins the fun!",
+    companion_intro: "Uh oh! The ice cream is melting faster than she can eat it, and it is dripping everywhere! What do you think we should do?",
+    initial_elements: [
+      { id: "sun-ice", type: "scenery", emoji: "☀️", label: "Hot Sun", animation: "pulse", x: 82, y: 12, size: "large" },
+      { id: "tree-ice", type: "scenery", emoji: "🌳", label: "Shady Tree", animation: "wiggle", x: 14, y: 30, size: "large" },
+      { id: "kid-ice", type: "character", emoji: "🧒", label: "Ice Cream Kid", animation: "bounce", x: 40, y: 58, size: "large", bubbleText: "So yummy!" },
+      { id: "cone-1", type: "item", emoji: "🍦", label: "Melting Cone", animation: "shake", x: 52, y: 50, size: "medium", bubbleText: "Drip drip!" },
+      { id: "drip-1", type: "effect", emoji: "💧", label: "Sticky Drip", animation: "float", x: 50, y: 70, size: "small" },
+      { id: "bench-ice", type: "scenery", emoji: "🪵", label: "Park Bench", animation: "none", x: 74, y: 64, size: "medium" },
+      { id: "flower-ice", type: "scenery", emoji: "🌷", label: "Tulip", animation: "wiggle", x: 24, y: 74, size: "small" }
+    ]
+  },
+  {
+    id: "lost-teddy",
+    title: "Lost Teddy 🧸",
+    problem: "Small toys get lost in the long playground grass, and kids go home crying without their favourite teddy!",
+    companion_intro: "Oh no! Someone's favourite teddy is lost somewhere in this big grassy playground! What do you think we should do?",
+    initial_elements: [
+      { id: "sun-lost", type: "scenery", emoji: "☀️", label: "Bright Sun", animation: "pulse", x: 84, y: 12, size: "large" },
+      { id: "tree-lost", type: "scenery", emoji: "🌳", label: "Tall Tree", animation: "wiggle", x: 16, y: 30, size: "large" },
+      { id: "kid-lost", type: "character", emoji: "👧", label: "Sad Kid", animation: "shake", x: 30, y: 58, size: "large", bubbleText: "Where is he?" },
+      { id: "grass-1", type: "scenery", emoji: "🌾", label: "Long Grass", animation: "wiggle", x: 58, y: 70, size: "large" },
+      { id: "grass-2", type: "scenery", emoji: "🌿", label: "Thick Grass", animation: "wiggle", x: 72, y: 74, size: "medium" },
+      { id: "teddy-1", type: "item", emoji: "🧸", label: "Hidden Teddy", animation: "none", x: 66, y: 72, size: "small", bubbleText: "Help!" },
+      { id: "slide-1", type: "scenery", emoji: "🛝", label: "Playground Slide", animation: "none", x: 84, y: 58, size: "medium" }
+    ]
+  },
+  {
+    id: "thirsty-birds",
+    title: "Thirsty Birds 🐦",
+    problem: "In hot summer the garden birds cannot find any water to drink, so they stop visiting and the garden goes quiet!",
+    companion_intro: "Listen... the garden is so quiet! The little birds have no water to drink in this heat. What do you think we should do?",
+    initial_elements: [
+      { id: "sun-bird", type: "scenery", emoji: "☀️", label: "Blazing Sun", animation: "pulse", x: 82, y: 12, size: "large" },
+      { id: "tree-bird", type: "scenery", emoji: "🌳", label: "Garden Tree", animation: "wiggle", x: 22, y: 30, size: "large" },
+      { id: "bird-1", type: "character", emoji: "🐦", label: "Thirsty Bird", animation: "float", x: 34, y: 34, size: "medium", bubbleText: "So thirsty!" },
+      { id: "bird-2", type: "character", emoji: "🕊️", label: "Tired Bird", animation: "float", x: 62, y: 28, size: "small", bubbleText: "No water..." },
+      { id: "ground-dry", type: "scenery", emoji: "🍂", label: "Dry Ground", animation: "none", x: 50, y: 72, size: "medium" },
+      { id: "flower-bird", type: "scenery", emoji: "🌻", label: "Droopy Sunflower", animation: "shake", x: 74, y: 66, size: "medium", bubbleText: "So dry!" },
+      { id: "fence-bird", type: "scenery", emoji: "🪵", label: "Garden Fence", animation: "none", x: 14, y: 68, size: "small" }
+    ]
+  },
+  {
+    id: "rainy-books",
+    title: "Soggy School Books 📚",
+    problem: "Rain soaks school bags on the walk home, and all the homework books turn into soggy mush!",
+    companion_intro: "Oh dear, it is pouring! His school books are getting soaked right through his bag! What do you think we should do?",
+    initial_elements: [
+      { id: "cloud-rain", type: "scenery", emoji: "🌧️", label: "Rain Cloud", animation: "float", x: 60, y: 14, size: "large", bubbleText: "Splish splash!" },
+      { id: "cloud-rain-2", type: "scenery", emoji: "☁️", label: "Grey Cloud", animation: "float", x: 24, y: 16, size: "medium" },
+      { id: "kid-rain", type: "character", emoji: "🚶", label: "Soaked Kid", animation: "shake", x: 38, y: 58, size: "large", bubbleText: "So wet!" },
+      { id: "bag-1", type: "item", emoji: "🎒", label: "Wet School Bag", animation: "shake", x: 50, y: 62, size: "medium", bubbleText: "Dripping!" },
+      { id: "book-1", type: "item", emoji: "📚", label: "Soggy Books", animation: "shake", x: 62, y: 70, size: "medium", bubbleText: "Ruined!" },
+      { id: "puddle-1", type: "effect", emoji: "💧", label: "Big Puddle", animation: "pulse", x: 74, y: 74, size: "medium" },
+      { id: "tree-rain", type: "scenery", emoji: "🌳", label: "Dripping Tree", animation: "wiggle", x: 15, y: 32, size: "large" }
     ]
   }];
 
