@@ -510,6 +510,17 @@ Latest input: "${message}"`;
     }
 
     const data = JSON.parse(text);
+
+    // The response schema REQUIRES a question, but the solve-phase prompt tells the
+    // model to stop asking once the trouble is fixed. Given a required field and
+    // nothing to say, it invents filler ("What game should our puppy play next?"),
+    // the child answers it, and that noise lands in the history. Bridge the handoff
+    // ourselves: the turn the trouble is solved, the question becomes the first
+    // empathy question of the grow phase.
+    if (phase !== 'grow' && data.solved) {
+      data.question = "How many other people do you think have this same trouble?";
+    }
+
     // servedBy lets the client (and a demo operator) see when answers are coming
     // from a weaker fallback model instead of the preferred one.
     res.json({ ...data, servedBy });

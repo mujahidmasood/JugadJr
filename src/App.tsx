@@ -245,6 +245,8 @@ export default function App() {
   // Typed answers, kept separate from messageInput so the "You said" echo of a
   // spoken answer is not overwritten while the child is typing the next one.
   const [typedIdea, setTypedIdea] = useState<string>("");
+  // Brief celebration banner the turn the trouble is fixed.
+  const [justSolved, setJustSolved] = useState<boolean>(false);
   // Once a child starts typing, stop opening the mic for them after every question -
   // a mic that grabs the turn while they are mid-sentence is worse than no mic.
   // Tapping the mic puts them back in voice mode.
@@ -459,7 +461,7 @@ export default function App() {
   // Companion finished asking a question: open the mic automatically (hands-free flow)
   const autoListenAfterQuestion = () => {
     if (!handsFree || isMuted || sharkOpen || prefersTyping) return;
-    setTimeout(() => startListening(true), 250);
+    setTimeout(() => startListening(true), 900);
   };
 
   // Switch companion and voice greet
@@ -713,9 +715,13 @@ export default function App() {
       const kidTurns = newHistory.filter(h => h.role === 'user').length;
 
       if (phase === 'solve' && (data.solved || kidTurns >= 8)) {
-        // Trouble fixed by the kid's own idea: move into the grow journey
+        // Trouble fixed by the kid's own idea: move into the grow journey.
+        // Hold here a moment - this is the payoff, and rushing straight into the
+        // next question means the child never gets to look at what they built.
         setPhase('grow');
-        triggerCompanionVoice(updatedSpeech, autoListenAfterQuestion);
+        setJustSolved(true);
+        setTimeout(() => setJustSolved(false), 3200);
+        triggerCompanionVoice(updatedSpeech, () => setTimeout(autoListenAfterQuestion, 1600));
       } else if (phase === 'grow' && data.phase_done) {
         // Empathy + plan complete: NOW Shark Sana swims in
         triggerCompanionVoice(updatedSpeech, () => runSharkReview([...newHistory, { role: 'model', message: updatedSpeech }]));
@@ -1242,6 +1248,14 @@ export default function App() {
 
           {/* DYNAMIC CANVAS OBJECTS */}
           <div className="flex-1 relative p-4">
+            {justSolved && (
+              <div className="absolute inset-x-0 top-1/3 z-40 flex justify-center pointer-events-none">
+                <div className="bg-emerald-300 border-4 border-slate-950 rounded-3xl px-6 py-3 shadow-[5px_5px_0_#0f172a] animate-actor-drop-in">
+                  <p className="font-black text-lg text-slate-900">🎉 You fixed it!</p>
+                </div>
+              </div>
+            )}
+
             {/* Quiet "thinking" cue. This used to be a full-screen modal that covered
                 the whole world on every single turn, hiding the very thing the child
                 had just changed. A small badge says the same thing without blocking. */}
