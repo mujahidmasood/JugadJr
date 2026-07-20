@@ -235,7 +235,7 @@ const speakText = (text: string, isMuted: boolean, pitch = 1.1, rate = 0.95, onE
 export default function App() {
   // Personalized Kid Name
   const [kidName, setKidName] = useState<string>(() => {
-    return localStorage.getItem("cartoon_kid_name") || "Abu";
+    return localStorage.getItem("cartoon_kid_name") || "";
   });
   const [tempName, setTempName] = useState<string>("");
 
@@ -1071,20 +1071,21 @@ export default function App() {
     }
   };
 
-  // Initial load. Waits for the intro so the companion is not speaking behind it.
+  // Initial load. Waits for the intro AND the name prompt, so the companion is not
+  // talking to an empty room behind a modal.
   useEffect(() => {
-    if (showIntro) return;
+    if (showIntro || !kidName) return;
     handleLoadOrGenerateScene(CURATED_PROBLEMS[0].problem, "muddy-puppies");
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.getVoices();
     }
-  }, [showIntro]);
+  }, [showIntro, kidName]);
 
   return (
     <div id="cartoon-app-root" className="min-h-screen bg-sky-100 text-slate-800 font-sans pb-10 flex flex-col justify-between">
       
       {/* PERSONALIZED WELCOME DIALOG (If kid's name isn't set yet!) */}
-      {!kidName && (
+      {!showIntro && !kidName && (
         <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[100] flex items-center justify-center p-4">
           <div className="bg-white border-4 border-slate-950 p-6 md:p-8 rounded-3xl shadow-[8px_8px_0_#1e293b] max-w-md w-full text-center space-y-5 animate-cartoon-bounce">
             
