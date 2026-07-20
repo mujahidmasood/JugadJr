@@ -8,7 +8,7 @@ Kids aged 5–11 watch a small trouble unfold in a cartoon world, say their own 
 
 ![JugadJr demo](assets/demo.gif)
 
-*A real recorded session, start to finish. The puppy runs through the mud, the child answers with their own idea — a doormat by the door — and it gets built into the world. Then the game asks who else has this problem.*
+*A real recorded session. The child answers "I don't know" — so the companion gives a sensory clue ("something wet and splashy from the sink") without ever naming the tool. The child gets there themselves, and their idea gets built into the world.*
 
 ---
 

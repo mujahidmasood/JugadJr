@@ -22,12 +22,15 @@ const FPS = 10;
 
 // Queue of answers, in order. Solve first, then the grow/empathy questions.
 const ANSWERS = [
-  'we can wipe his paws with a doormat by the door',
-  'lots of people at the park have muddy dogs too',
+  // Deliberately stuck first: this is what the escalation ladder exists for, and
+  // the companion must answer it with a clue rather than the solution.
+  'i dont know',
+  'wash his paws with soap and water',
+  'lots of dogs at the park get muddy too',
   'yes i want to help them',
   'make a little money',
   'yes lets make a plan',
-  'i will put up posters at the park gate',
+  'i will put a sign at the park gate',
   'ask the pet shop to tell people about it',
 ];
 
@@ -107,12 +110,12 @@ for (let i = 0; i < ANSWERS.length; i++) {
   const box = await page.$('input[placeholder*="type your idea"]');
   if (!box) break;
 
-  mark(i === 0 ? 'their idea' : `grow answer ${i}`);
+  mark(i === 0 ? 'stuck' : i === 1 ? 'their idea' : `grow answer ${i - 1}`);
   await typeInto('input[placeholder*="type your idea"]', ANSWERS[i]);
   await hold(600);
   const [send] = await page.$$('xpath/.//button[contains(., "Send")]');
   if (send) await send.click();
-  if (i === 0) mark('idea gets built');
+  if (i === 1) mark('idea gets built');
   await waitForTurn();
   await hold(2200);
 }
