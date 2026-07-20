@@ -15,6 +15,18 @@ import {
   Play
 } from 'lucide-react';
 import { CartoonElement, ChatHistoryItem, CuratedProblem } from './types';
+
+// Minimum answers in the grow phase before Shark Sana may appear.
+const MIN_GROW_ANSWERS = 4;
+
+// Used only when the model tries to end the journey early: it stops asking, but the
+// child still needs a question in front of them.
+const GROW_FALLBACK_QUESTIONS = [
+  "Who else do you know with this same trouble?",
+  "How would you tell them about your idea?",
+  "How could you make it help even more people?",
+  "What would you need to make it bigger?",
+];
 import { COMPANIONS, CompanionAvatar, CompanionType } from './components/CompanionAvatars';
 import { DogActor, KidActor, BirdActor, TeddyActor, resolveActor, resolveMood } from './components/SceneActors';
 import { ParentGate } from './components/ParentGate';
@@ -247,6 +259,10 @@ export default function App() {
   const [typedIdea, setTypedIdea] = useState<string>("");
   // Brief celebration banner the turn the trouble is fixed.
   const [justSolved, setJustSolved] = useState<boolean>(false);
+  // How many questions the child has answered since the trouble was fixed. The model
+  // would sometimes declare the journey over on the very turn it asked a question,
+  // so the investor turned up on top of a question nobody had answered yet.
+  const [growAnswers, setGrowAnswers] = useState<number>(0);
   // Once a child starts typing, stop opening the mic for them after every question -
   // a mic that grabs the turn while they are mid-sentence is worse than no mic.
   // Tapping the mic puts them back in voice mode.
@@ -386,6 +402,7 @@ export default function App() {
     setHistory([]);
     setMessageInput("");
     setPhase('solve');
+    setGrowAnswers(0);
     setProblemText(customProblem);
     // Clear the highlight when the child brings their own trouble, or a curated
     // chip stays lit while a completely different scene is on screen.
@@ -706,7 +723,15 @@ export default function App() {
 
       setCartoonTitle(data.cartoon_title || "Magic World");
       setNarrativeSummary(data.narrative_summary);
-      setQuestionText(data.question);
+
+      // The server blanks the question whenever the model says the journey is over.
+      // If we are overriding that because the child has not answered enough yet,
+      // they still need something to answer - never leave them with a blank prompt.
+      const endingNow = phase === 'grow' && data.phase_done && growAnswers + 1 >= MIN_GROW_ANSWERS;
+      const nextQuestion = data.question || (endingNow
+        ? ""
+        : GROW_FALLBACK_QUESTIONS[Math.min(growAnswers, GROW_FALLBACK_QUESTIONS.length - 1)]);
+      setQuestionText(nextQuestion);
       setHistory([...newHistory, { role: 'model', message: updatedSpeech }]);
 
       applyCoins(data.coins_earned || 0, data.invention_cost || 0);
@@ -722,10 +747,16 @@ export default function App() {
         setJustSolved(true);
         setTimeout(() => setJustSolved(false), 3200);
         triggerCompanionVoice(updatedSpeech, () => setTimeout(autoListenAfterQuestion, 1600));
-      } else if (phase === 'grow' && data.phase_done) {
-        // Empathy + plan complete: NOW Shark Sana swims in
-        triggerCompanionVoice(updatedSpeech, () => runSharkReview([...newHistory, { role: 'model', message: updatedSpeech }]));
+      } else if (phase === 'grow' && data.phase_done && growAnswers + 1 >= MIN_GROW_ANSWERS) {
+        // The journey is genuinely finished: the investor has something to review.
+        setGrowAnswers(0);
+        triggerCompanionVoice(updatedSpeech, () => setTimeout(
+          () => runSharkReview([...newHistory, { role: 'model', message: updatedSpeech }]), 1800));
       } else {
+        // Includes the case where the model wants to wrap up early. The shark
+        // arriving after one or two answers cuts the child off mid-thought, so we
+        // keep going until they have actually worked through the ladder.
+        if (phase === 'grow') setGrowAnswers((n) => n + 1);
         triggerCompanionVoice(updatedSpeech, autoListenAfterQuestion);
       }
     } catch (err: any) {

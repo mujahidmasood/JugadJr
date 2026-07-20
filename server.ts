@@ -521,6 +521,14 @@ Latest input: "${message}"`;
       data.question = "How many other people do you think have this same trouble?";
     }
 
+    // Same trap at the other end: the model would set phase_done while still asking
+    // a question, so the investor arrived on top of a question the child never got
+    // to answer. If this turn ends the journey, it ends with a closing line, not a
+    // question.
+    if (phase === 'grow' && data.phase_done) {
+      data.question = "";
+    }
+
     // servedBy lets the client (and a demo operator) see when answers are coming
     // from a weaker fallback model instead of the preferred one.
     res.json({ ...data, servedBy });
@@ -548,7 +556,8 @@ The kid just solved today's trouble with their own invention. Review their whole
 Output JSON:
 1. "speech": Your spoken review, max 45 words. Confident, kind, a little dramatic ("Splash! I'm Shark Sana!"). Announce each score with one playful reason. If invested, say you are giving 20 coins. Never mock the kid; always end positive.
 2. "creativity": 0-10. Fresh, imaginative invention?
-3. "business_brain": 0-10. Did they ever think about WHO pays, price, or earning coins? Low if never mentioned.
+3. "business_brain": 0-10. Did they think about who their idea is FOR and how it reaches them - who needs it, how people find out, how it could grow? If they chose to charge, price and earnings count too.
+   IMPORTANT: choosing to help people for FREE is a valid, admirable business choice in this game. Never score a child down for generosity. Judge the thinking about reach and impact, not whether money changes hands.
 4. "math_sense": 0-10. Did costs vs earnings roughly make sense?
 5. "invested": true if average of the three scores is 7 or higher.
 6. "tip": ONE practical, kid-level business tip, max 12 words.
